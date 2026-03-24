@@ -12,8 +12,7 @@ const UserSchema = new Schema(
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ["admin", "user", "editor"] },
     status: { type: String, enum: ["active", "inactive", "locked"] },
-    lastLogin: { type: Date },
-    tenantId: { type: Types.ObjectId, required: true, index: true },
+    lastLogin: { type: Date }
   },
   baseOptions,
 );

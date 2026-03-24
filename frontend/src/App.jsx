@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import './App.css'
+import AddCompany from './AddCompany'
 
 function App() {
-  return <h1>CRM</h1>
+  return <AddCompany />
 }
 
 export default App

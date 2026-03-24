@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const { Schema, model, Types } = mongoose;
 
+const User = require("../models/User");
+const Pipeline = require("../models/Pipeline");
+const Contact = require("../models/Contact");
+
 const baseOptions = { timestamps: true };
 
 const CompanySchema = new Schema(
