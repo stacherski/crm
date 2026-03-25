@@ -77,11 +77,24 @@
           "email": {
             "type": "string"
           },
-          "role": {
+          "passwordHash": {
             "type": "string"
           },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "user",
+              "editor"
+            ]
+          },
           "status": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "locked"
+            ]
           },
           "lastLogin": {
             "type": "string"
@@ -156,6 +169,60 @@
         "responses": {
           "200": {
             "description": "A list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/": {
+      "post": {
+        "summary": "Create new user",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "example": {
+                "name": "Ashoka",
+                "surname": "Pako",
+                "email": "ashoka@gmail.com",
+                "password": "password",
+                "role": "admin",
+                "status": "active"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
             "content": {
               "application/json": {
                 "schema": {

@@ -17,10 +17,20 @@ const baseOptions = { timestamps: true };
  *           type: string
  *         email:
  *           type: string
+ *         passwordHash:
+ *           type: string
  *         role:
  *           type: string
+ *           enum:
+ *             - admin
+ *             - user
+ *             - editor
  *         status:
  *           type: string
+ *           enum:
+ *             - active
+ *             - inactive
+ *             - locked
  *         lastLogin:
  *           type: string
  */
