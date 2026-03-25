@@ -33,6 +33,36 @@ const baseOptions = { timestamps: true };
  *             - locked
  *         lastLogin:
  *           type: string
+ *     UserCreated:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         passwordHash:
+ *           type: string
+ *         role:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - user
+ *             - editor
+ *         status:
+ *           type: string
+ *           enum:
+ *             - active
+ *             - inactive
+ *             - locked
+ *         createdAt:
+ *           type: string
+ *         updatedAt:
+ *           type: string
+ *         __v:
+ *           type: number
+ *
  */
 
 const UserSchema = new Schema(
