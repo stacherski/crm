@@ -7,7 +7,42 @@ const Pipeline = require("../models/Pipeline");
 const Contact = require("../models/Contact");
 
 const baseOptions = { timestamps: true };
-
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Company:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         address:
+ *           type: string
+ *         city:
+ *           type: string
+ *         postCode:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         vat:
+ *           type: string
+ *         status:
+ *           type: string
+ *         companyType:
+ *           type: string
+ *         contactMethods:
+ *           type: array
+ *           items:
+ *             type: string
+ *         brokerId:
+ *           type: string
+ *         tenantId:
+ *           type: string
+ *         email:
+ *           type: string
+ */
 const CompanySchema = new Schema(
   {
     name: { type: String, required: true, index: true },
@@ -18,7 +53,7 @@ const CompanySchema = new Schema(
     phone: { type: String, required: true },
     vat: { type: String },
     status: { type: String, enum: ["active", "inactive"], required: true },
-    type: {
+    companyType: {
       type: String,
       enum: ["lead", "prospect", "client"],
       required: true,

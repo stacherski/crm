@@ -4,6 +4,27 @@ const { Schema, model, Types } = mongoose;
 
 const baseOptions = { timestamps: true };
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         role:
+ *           type: string
+ *         status:
+ *           type: string
+ *         lastLogin:
+ *           type: string
+ */
+
 const UserSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -12,7 +33,7 @@ const UserSchema = new Schema(
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ["admin", "user", "editor"] },
     status: { type: String, enum: ["active", "inactive", "locked"] },
-    lastLogin: { type: Date }
+    lastLogin: { type: Date },
   },
   baseOptions,
 );

@@ -4,8 +4,94 @@
     "title": "CRM API Docs",
     "version": "1.0.0"
   },
+  "security": [
+    {
+      "api_key": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "Company": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "postCode": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "vat": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "companyType": {
+            "type": "string"
+          },
+          "contactMethods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "brokerId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "lastLogin": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
   "paths": {
-    "/api/companies": {
+    "/api/company": {
       "get": {
         "summary": "Get all companies",
         "tags": [
@@ -19,7 +105,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "models/Company"
+                    "$ref": "#/components/schemas/Company"
                   }
                 }
               }
@@ -28,7 +114,7 @@
         }
       }
     },
-    "/api/users": {
+    "/api/user": {
       "get": {
         "summary": "Get all users",
         "tags": [
@@ -42,7 +128,53 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "models/User"
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/name/{name}": {
+      "get": {
+        "summary": "Get user by name",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
                   }
                 }
               }
@@ -52,6 +184,5 @@
       }
     }
   },
-  "components": {},
   "tags": []
 }

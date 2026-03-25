@@ -1,11 +1,11 @@
 require("dotenv").config();
 
 const express = require("express");
+const compression = require("compression");
 const mongoose = require("mongoose");
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerSpec = require('./swagger.json');
-const fs = require('fs');
+const apiKey = require("./middleware/apiKey");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger.json");
 
 mongoose
   .connect(process.env.DATABASE_URL)
@@ -14,20 +14,39 @@ mongoose
 
 const app = express();
 
+// Compression middleware
+app.use(compression());
+
+app.use("/api", apiKey);
+
+const options = {
+  setHeaders(res, path, stat) {
+    res.set("x-api-key", process.env.API_KEY);
+  },
+};
+
+app.use(express.static("public", options));
+
 app.use(express.json());
 
 //Swagger API
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  }),
+);
 
 //company routes API
 const companyRoutes = require("./routes/companyRoutes");
-app.use("/api/companies", companyRoutes);
+app.use("/api/company", companyRoutes);
 
 //user routes API
 const userRoutes = require("./routes/userRoutes");
-app.use("/api/users", userRoutes);
-
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send({ message: "CRM API running" });

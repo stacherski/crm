@@ -7,7 +7,7 @@ const Contact = require("../models/Contact");
 
 /**
  * @openapi
- * /api/companies:
+ * /api/company:
  *   get:
  *     summary: Get all companies
  *     tags: [Companies]
@@ -19,7 +19,7 @@ const Contact = require("../models/Contact");
  *             schema:
  *               type: array
  *               items:
- *                 $ref: 'models/Company'
+ *                 $ref: '#/components/schemas/Company'
  */
 
 router.get("/", async (req, res) => {
