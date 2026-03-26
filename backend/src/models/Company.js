@@ -24,6 +24,8 @@ const baseOptions = { timestamps: true };
  *           type: string
  *         postCode:
  *           type: string
+ *         email:
+ *           type: string
  *         phone:
  *           type: string
  *         vat:
@@ -36,11 +38,8 @@ const baseOptions = { timestamps: true };
  *           type: array
  *           items:
  *             type: string
+ *           example: ["email", "phone", "sms"]
  *         brokerId:
- *           type: string
- *         tenantId:
- *           type: string
- *         email:
  *           type: string
  */
 const CompanySchema = new Schema(
@@ -67,7 +66,6 @@ const CompanySchema = new Schema(
       required: true,
       index: true,
     },
-    tenantId: { type: Types.ObjectId, required: true, index: true },
   },
   baseOptions,
 );

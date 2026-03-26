@@ -36,6 +36,9 @@
           "postCode": {
             "type": "string"
           },
+          "email": {
+            "type": "string"
+          },
           "phone": {
             "type": "string"
           },
@@ -52,15 +55,14 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "example": [
+              "email",
+              "phone",
+              "sms"
+            ]
           },
           "brokerId": {
-            "type": "string"
-          },
-          "tenantId": {
-            "type": "string"
-          },
-          "email": {
             "type": "string"
           }
         }
@@ -146,11 +148,11 @@
     }
   },
   "paths": {
-    "/api/company": {
+    "/api/company/all": {
       "get": {
         "summary": "Get all companies",
         "tags": [
-          "Companies"
+          "Company"
         ],
         "responses": {
           "200": {
@@ -161,6 +163,282 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/company/id/{id}": {
+      "get": {
+        "summary": "Get company by ID",
+        "tags": [
+          "Company"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company with ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Company ID is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Company's ID is required"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Company not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/company/add": {
+      "post": {
+        "summary": "Create new company",
+        "tags": [
+          "Company"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Company"
+              },
+              "example": {
+                "name": "ACME Inc.",
+                "address": "123 The Great Plains",
+                "city": "Turbulence Heights",
+                "postCode": "MN 3456",
+                "email": "hello@acmeinc.com",
+                "phone": "+48876654432",
+                "vat": "PL9878767655",
+                "status": "active",
+                "companyType": "lead",
+                "contactMethods": [
+                  "email",
+                  "phone"
+                ],
+                "brokerId": "userID"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Company not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/company/{id}": {
+      "patch": {
+        "summary": "Update company data",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Company"
+              },
+              "example": {
+                "name": "ACME Inc",
+                "address": "13 Main Street",
+                "city": "Warsaw",
+                "postCode": "00-950",
+                "email": "ashoka@gmail.com",
+                "phone": "+48654543432",
+                "vat": "PL8767656543",
+                "status": "active",
+                "companyType": "lead",
+                "contactMethods": {
+                  "tags": [
+                    "email",
+                    "phone"
+                  ]
+                },
+                "brokerId": "userID"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete company by ID",
+        "tags": [
+          "Company"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Company not found"
                   }
                 }
               }
@@ -192,9 +470,9 @@
         }
       }
     },
-    "/api/user/id/{id}": {
+    "/api/user/{id}": {
       "get": {
-        "summary": "Get user by id",
+        "summary": "Get user by ID",
         "tags": [
           "User"
         ],
@@ -223,120 +501,33 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user/name/{name}": {
-      "get": {
-        "summary": "Get user by name",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "name",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of users",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user/": {
-      "post": {
-        "summary": "Create new user",
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              },
-              "example": {
-                "name": "Ashoka",
-                "surname": "Pako",
-                "email": "ashoka@gmail.com",
-                "password": "password",
-                "role": "admin",
-                "status": "active"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/UserCreated"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
+            "description": "User's ID is required",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "example": {
-                    "message": "Bad request"
+                    "message": "User's ID is required"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "User not found"
                   }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/api/user/{id}": {
+      },
       "patch": {
         "summary": "Update user data",
         "tags": [
@@ -459,6 +650,104 @@
                 "schema": {
                   "type": "object",
                   "example": "500 Server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/{id}/company": {
+      "get": {
+        "summary": "Get companies with brokerID",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/add": {
+      "post": {
+        "summary": "Create new user",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "example": {
+                "name": "Ashoka",
+                "surname": "Pako",
+                "email": "ashoka@gmail.com",
+                "password": "password",
+                "role": "admin",
+                "status": "active"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
                 }
               }
             }

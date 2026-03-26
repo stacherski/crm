@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const User = require("../models/User");
+const Company = require("../models/Company");
 const getUserByName = require("../middleware/getUserByName");
 const getUserByID = require("../middleware/getUserById");
 
@@ -28,9 +29,53 @@ router.get("/all", async (req, res) => {
 });
 
 /** @openapi
- * /api/user/id/{id}:
+ * /api/user/{id}:
  *   get:
- *     summary: Get user by id
+ *     summary: Get user by ID
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       400:
+ *         description: User's ID is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "User's ID is required"}
+ *       404:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "User not found"}
+ *       200:
+ *         description: Single user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
+
+router.get("/:id", getUserByID, async (req, res) => {
+  if (req.params.id == null) {
+    res.status(400).json({ message: "User ID is required" });
+  }
+  const users = await User.find({ _id: req.params.id });
+  res.status(200).json(users);
+});
+
+/** @openapi
+ * /api/user/{id}/company:
+ *   get:
+ *     summary: Get companies with brokerID
  *     tags: [User]
  *     parameters:
  *       - in: path
@@ -46,7 +91,7 @@ router.get("/all", async (req, res) => {
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Company'
  *       200:
  *         description: Single user
  *         content:
@@ -54,57 +99,19 @@ router.get("/all", async (req, res) => {
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Company'
  */
 
-router.get("/id/:id", getUserByID, async (req, res) => {
+router.get("/:id/company", async (req, res) => {
   if (req.params.id == null) {
     res.status(400).json({ message: "User ID is required" });
   }
-  const users = await User.find({ name: req.params.name });
-  res.status(200).json(users);
+  const company = await Company.find({ brokerId: req.params.id });
+  res.status(200).json(company);
 });
 
 /** @openapi
- * /api/user/name/{name}:
- *   get:
- *     summary: Get user by name
- *     tags: [User]
- *     parameters:
- *       - in: path
- *         name: name
- *         schema:
- *           type: string
- *         required: true
- *     responses:
- *       400:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- *       200:
- *         description: A list of users
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- */
-
-router.get("/name/:name", getUserByName, async (req, res) => {
-  if (req.params.name == null) {
-    res.status(400).json({ message: "User name is required" });
-  }
-  const users = await User.find({ name: req.params.name });
-  res.status(200).json(users);
-});
-
-/** @openapi
- * /api/user/:
+ * /api/user/add:
  *   post:
  *     summary: Create new user
  *     tags: [User]
@@ -138,7 +145,7 @@ router.get("/name/:name", getUserByName, async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.post("/", async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { name, surname, email, password, role, status } = req.body;
 
