@@ -38,19 +38,21 @@ router.get("/all", async (req, res) => {
 
 /**
  * @openapi
- * /api/company/id/{id}:
+ * /api/company/query:
  *   get:
- *     summary: Get company by ID
+ *     summary: Get companies filtered by query
+ *     description: |
+ *       **Notes:**
+ *       - Calling enpoint without query parameters will simply return all users, matching <b>/api/company/all</b> endpoint.
+ *       - Query can be passed to endpoint to filter down by multiple fields.
+ *       - Allowed fields are: _id, name, address, city, postCode, email, phone, vat, status, companyType, contactMethods, brokerId, createdAt, updatedAt
+ *       - For name, address, email, phone, vat fields query will search for passed value within field
+ *       - Example query: <b>?name=ACME&email=gmail.com</b>
+ *       - No support for passing query within Swagger API Docs, use Insomnia or Postman
  *     tags: [Company]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
  *     responses:
  *       200:
- *         description: Company with ID
+ *         description: A list of companies
  *         content:
  *           application/json:
  *             schema:
@@ -58,27 +60,69 @@ router.get("/all", async (req, res) => {
  *               items:
  *                 $ref: '#/components/schemas/Company'
  *       400:
- *         description: Company ID is required
+ *         description: Bad request
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               example: {message: "Company's ID is required"}
- *       404:
- *         description: Not Found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               example: {message: "Company not found"}
+ *               example: {message: "Bad request"}
  */
 
-router.get("/id/:id", getCompanyByID, async (req, res) => {
-  if (req.params.id == null) {
-    res.status(400).json({ message: "Company ID is required" });
+router.get("/query", async (req, res) => {
+  const allowedFields = [
+    "_id",
+    "name",
+    "address",
+    "city",
+    "postCode",
+    "email",
+    "phone",
+    "vat",
+    "status",
+    "companyType",
+    "contactMethods",
+    "brokerId",
+    "createdAt",
+    "updatedAt",
+  ];
+  const query = {};
+
+  for (const [key, value] of Object.entries(req.query)) {
+    if (!allowedFields.includes(key)) continue;
+
+    if (key === "name") {
+      query.name = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (key === "address") {
+      query.address = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (value.includes(",")) {
+      query[key] = { $in: value.split(",") };
+      continue;
+    }
+
+    if (key === "phone") {
+      query.phone = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (key === "email") {
+      query.email = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (key === "vat") {
+      query.vat = { $regex: value, $options: "i" };
+      continue;
+    }
+    query[key] = value;
   }
-  const company = await Company.find({ _id: req.params.id });
-  res.status(200).json(company);
+  const companies = await Company.find(query);
+  res.json(companies);
 });
 
 /**
@@ -166,10 +210,10 @@ router.post("/add", async (req, res) => {
 });
 
 /** @openapi
- * /api/company/{id}:
+ * /api/company/patch/{id}:
  *   patch:
  *     summary: Update company data
- *     tags: [User]
+ *     tags: [Company]
  *     parameters:
  *       - in: path
  *         name: id
@@ -211,7 +255,7 @@ router.post("/add", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.patch("/:id", getCompanyByID, async (req, res) => {
+router.patch("/patch/:id", getCompanyByID, async (req, res) => {
   if (req.body.name != null) {
     res.company.name = req.body.name;
   }
@@ -255,7 +299,7 @@ router.patch("/:id", getCompanyByID, async (req, res) => {
 
 /**
  * @openapi
- * /api/company/{id}:
+ * /api/company/delete/{id}:
  *  delete:
  *     summary: Delete company by ID
  *     tags: [Company]
@@ -271,9 +315,8 @@ router.patch("/:id", getCompanyByID, async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Company'
+ *               type: object
+ *               example: {message: "Company ID: 69c4f9090d2bbde75227de75 deleted"}
  *       400:
  *         description: Bad request
  *         content:
@@ -290,7 +333,7 @@ router.patch("/:id", getCompanyByID, async (req, res) => {
  *               example: {message: "Company not found"}
  */
 
-router.delete("/:id", getCompanyByID, async (req, res) => {
+router.delete("/delete/:id", getCompanyByID, async (req, res) => {
   try {
     await res.company.deleteOne();
     res.json({ message: `Company ID: ${req.params.id} deleted` });

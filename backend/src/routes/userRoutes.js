@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const User = require("../models/User");
 const Company = require("../models/Company");
-const getUserByName = require("../middleware/getUserByName");
 const getUserByID = require("../middleware/getUserById");
 
 /**
@@ -21,6 +20,13 @@ const getUserByID = require("../middleware/getUserById");
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: "Error: Internal Server Error"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "Error message"}
  */
 
 router.get("/all", async (req, res) => {
@@ -28,7 +34,89 @@ router.get("/all", async (req, res) => {
   res.status(200).json(users);
 });
 
-/** @openapi
+/**
+ * @openapi
+ * /api/user/query:
+ *   get:
+ *     summary: Get all users filtered by query
+ *     description: |
+ *       **Notes:**
+ *       - Calling enpoint without query parameters will simply return all users, matching <b>/api/user/all</b> endpoint.
+ *       - Query can be passed to endpoint to filter down by multiple fields.
+ *       - Allowed fields are: _id, name, surname, email, phone, status, role, lastLogin, createdAt, updatedAt
+ *       - For name, surname, email & phone fields query will search for passed value within field
+ *       - Example query: <b>?name=John&email=gmail.com</b>
+ *       - No support for passing query within Swagger API Docs, use Insomnia or Postman
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: A list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: "Error: Internal Server Error"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "Error message"}
+ */
+
+router.get("/query", async (req, res) => {
+  const allowedFields = [
+    "_id",
+    "name",
+    "surname",
+    "phone",
+    "email",
+    "status",
+    "role",
+    "lastLogin",
+    "createdAt",
+    "updatedAt",
+  ];
+  const query = {};
+
+  console.log("q:", req.query);
+  for (const [key, value] of Object.entries(req.query)) {
+    if (!allowedFields.includes(key)) continue;
+
+    if (key === "name") {
+      query.name = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (key === "surname") {
+      query.surname = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (value.includes(",")) {
+      query[key] = { $in: value.split(",") };
+      continue;
+    }
+
+    if (key === "phone") {
+      query.phone = { $regex: value, $options: "i" };
+      continue;
+    }
+
+    if (key === "email") {
+      query.email = { $regex: value, $options: "i" };
+      continue;
+    }
+    query[key] = value;
+  }
+
+  const users = await User.find(query);
+  res.status(200).json(users);
+});
+
+/** //@openapi
  * /api/user/{id}:
  *   get:
  *     summary: Get user by ID
@@ -171,7 +259,7 @@ router.post("/add", async (req, res) => {
 });
 
 /** @openapi
- * /api/user/{id}:
+ * /api/user/patch/{id}:
  *   patch:
  *     summary: Update user data
  *     tags: [User]
@@ -211,7 +299,7 @@ router.post("/add", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.patch("/:id", getUserByID, async (req, res) => {
+router.patch("patch/:id", getUserByID, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -240,7 +328,7 @@ router.patch("/:id", getUserByID, async (req, res) => {
 });
 
 /** @openapi
- * /api/user/{id}:
+ * /api/user/delete/{id}:
  *   delete:
  *     summary: Delete user by ID
  *     tags: [User]
@@ -281,7 +369,7 @@ router.patch("/:id", getUserByID, async (req, res) => {
  *               example: "500 Server error"
  */
 
-router.delete("/:id", getUserByID, async (req, res) => {
+router.delete("delete/:id", getUserByID, async (req, res) => {
   try {
     await res.user.deleteOne();
     res.json({ message: `User ID: ${req.params.id} deleted` });
