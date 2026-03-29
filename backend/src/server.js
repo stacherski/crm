@@ -7,7 +7,8 @@ const apiKey = require("./middleware/apiKey");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger.json");
 
-
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 mongoose
   .connect(process.env.DATABASE_URL)
@@ -18,6 +19,7 @@ const app = express();
 
 // Compression middleware
 app.use(compression());
+app.use(cors());
 
 app.use("/api", apiKey);
 
@@ -53,6 +55,11 @@ app.use("/api/user", userRoutes);
 //role routes API
 const roleRoutes = require("./routes/roleRoutes");
 app.use("/api/role", roleRoutes);
+
+//auth login routes API
+const loginRoutes = require("./routes/loginRoutes");
+app.use("/auth/login", loginRoutes);
+
 
 app.get("/", (req, res) => {
   res.send({ message: "CRM API running" });

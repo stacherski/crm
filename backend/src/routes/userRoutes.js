@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require("../models/User");
 const Company = require("../models/Company");
 const getUserByID = require("../middleware/getUserById");
+const hashPassword = require("../middleware/hashPassword");
 
 /**
  * @openapi
@@ -299,7 +300,7 @@ router.post("/add", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.patch("/patch/:id", getUserByID, async (req, res) => {
+router.patch("/patch/:id", hashPassword, getUserByID, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -324,8 +325,8 @@ router.patch("/patch/:id", getUserByID, async (req, res) => {
   if (req.body.status != null) {
     res.user.status = req.body.status;
   }
-  if (req.body.password != null && req.body.password.length > 7) {
-    res.user.passwordHash = await bcrypt.hash(password, 10);
+  if (req.body.passwordHash != null) {
+    res.user.passwordHash = req.body.passwordHash;
   }
 
   try {

@@ -40,7 +40,7 @@ const baseOptions = { timestamps: true };
  *       type: object
  *       properties:
  *         _id:
- *           type: string
+ *          type: string
  *         name:
  *           type: string
  *         email:
@@ -51,9 +51,9 @@ const baseOptions = { timestamps: true };
  *           type: string
  *         role:
  *           type: string
- *        permissions:
- *          type: array
- *          items:
+ *         permissions:
+ *           type: array
+ *           items:
  *             type: string
  *         status:
  *           type: string
@@ -61,12 +61,12 @@ const baseOptions = { timestamps: true };
  *             - active
  *             - inactive
  *             - locked
- *         createdAt:
- *           type: string
- *         updatedAt:
- *           type: string
- *         __v:
- *           type: number
+ *           createdAt:
+ *             type: string
+ *           updatedAt:
+ *             type: string
+ *           __v:
+ *             type: number
  *
  */
 

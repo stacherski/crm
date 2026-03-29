@@ -162,13 +162,17 @@
           "passwordHash": {
             "type": "string"
           },
+          "roleId": {
+            "type": "string"
+          },
           "role": {
-            "type": "string",
-            "enum": [
-              "admin",
-              "user",
-              "manager"
-            ]
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "status": {
             "type": "string",
@@ -176,16 +180,16 @@
               "active",
               "inactive",
               "locked"
-            ]
-          },
-          "createdAt": {
-            "type": "string"
-          },
-          "updatedAt": {
-            "type": "string"
-          },
-          "__v": {
-            "type": "number"
+            ],
+            "createdAt": {
+              "type": "string"
+            },
+            "updatedAt": {
+              "type": "string"
+            },
+            "__v": {
+              "type": "number"
+            }
           }
         }
       }
@@ -471,6 +475,32 @@
         }
       }
     },
+    "/auth/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
     "/api/role": {
       "get": {
         "summary": "Get all roles",
@@ -644,7 +674,7 @@
                 "surname": "Pako",
                 "email": "ashoka@gmail.com",
                 "password": "password",
-                "role": "admin",
+                "roleId": "reference to Role ID",
                 "status": "active"
               }
             }
