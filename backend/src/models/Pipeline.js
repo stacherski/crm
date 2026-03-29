@@ -44,7 +44,12 @@ const PipelineSchema = new Schema(
     closingDate: { type: Date, required: true, index: true },
     followUpDate: { type: Date },
     notes: { type: String },
-    tenantId: { type: Types.ObjectId, required: true, index: true },
+    brokerId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
   },
   baseOptions,
 );

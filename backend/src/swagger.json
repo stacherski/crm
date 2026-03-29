@@ -67,6 +67,46 @@
           }
         }
       },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "string",
+            "enum": [
+              "company:read",
+              "company:write",
+              "company:delete",
+              "pipeline:read",
+              "pipeline:write",
+              "pipeline:delete",
+              "user:read",
+              "user:write",
+              "user:delete"
+            ]
+          }
+        },
+        "example": {
+          "_id": "64b8c9f1e1b2c3d4e5f67890",
+          "name": "admin",
+          "permissions": [
+            "company:read",
+            "company:write",
+            "company:delete",
+            "pipeline:read",
+            "pipeline:write",
+            "pipeline:delete",
+            "user:read",
+            "user:write",
+            "user:delete"
+          ]
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -82,13 +122,17 @@
           "passwordHash": {
             "type": "string"
           },
+          "roleId": {
+            "type": "string"
+          },
           "role": {
-            "type": "string",
-            "enum": [
-              "admin",
-              "user",
-              "editor"
-            ]
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "status": {
             "type": "string",
@@ -123,7 +167,7 @@
             "enum": [
               "admin",
               "user",
-              "editor"
+              "manager"
             ]
           },
           "status": {
@@ -419,6 +463,42 @@
                   "type": "object",
                   "example": {
                     "message": "Company not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/role": {
+      "get": {
+        "summary": "Get all roles",
+        "tags": [
+          "Role"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error: Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Error message"
                   }
                 }
               }

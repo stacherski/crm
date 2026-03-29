@@ -18,7 +18,12 @@ const CompanyContactSchema = new Schema(
     email: { type: String, required: true },
     phone: { type: String, required: true },
     tags: [{ type: String }],
-    tenantId: { type: Types.ObjectId, required: true, index: true },
+    brokerId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
   },
   baseOptions,
 );

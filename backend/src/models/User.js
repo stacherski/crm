@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+const Role = require("../models/Role");
 const { Schema, model, Types } = mongoose;
 
 const baseOptions = { timestamps: true };
@@ -19,12 +20,14 @@ const baseOptions = { timestamps: true };
  *           type: string
  *         passwordHash:
  *           type: string
+ *         roleId:
+ *           type: string
  *         role:
  *           type: string
- *           enum:
- *             - admin
- *             - user
- *             - editor
+ *         permissions:
+ *           type: array
+ *           items:
+ *             type: string
  *         status:
  *           type: string
  *           enum:
@@ -44,12 +47,14 @@ const baseOptions = { timestamps: true };
  *           type: string
  *         passwordHash:
  *           type: string
+ *         roleId:
+ *           type: string
  *         role:
  *           type: string
- *           enum:
- *             - admin
- *             - user
- *             - editor
+ *        permissions:
+ *          type: array
+ *          items:
+ *             type: string
  *         status:
  *           type: string
  *           enum:
@@ -71,12 +76,26 @@ const UserSchema = new Schema(
     surname: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     passwordHash: { type: String, required: true },
-    role: { type: String, enum: ["admin", "user", "editor"] },
+    roleId: {
+      type: Types.ObjectId,
+      ref: "Role",
+      required: true,
+      index: true,
+    },
+    role: { type: String, required: false },
+    permissions: [{ type: String, required: false }],
     status: { type: String, enum: ["active", "inactive", "locked"] },
     lastLogin: { type: Date },
   },
   baseOptions,
 );
+
+UserSchema.pre("save", async function () {
+  if (!this.isModified("roleId")) return
+  const role = await mongoose.model("Role").findById(this.roleId)
+  this.role = role.name
+  this.permissions = role.permissions
+})
 
 const User = mongoose.model("User", UserSchema);
 

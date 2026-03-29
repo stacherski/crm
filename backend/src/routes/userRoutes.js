@@ -214,7 +214,7 @@ router.get("/:id/company", async (req, res) => {
  *             surname: "Pako"
  *             email: "ashoka@gmail.com"
  *             password: "password"
- *             role: "admin"
+ *             roleId: "reference to Role ID"
  *             status: "active"
  *     responses:
  *       201:
@@ -235,7 +235,7 @@ router.get("/:id/company", async (req, res) => {
 
 router.post("/add", async (req, res) => {
   try {
-    const { name, surname, email, password, role, status } = req.body;
+    const { name, surname, email, password, roleId, status } = req.body;
 
     if (!password || password.length < 8) {
       return res
@@ -248,7 +248,7 @@ router.post("/add", async (req, res) => {
       surname: surname,
       email: email,
       passwordHash: hashedPassword,
-      role: role,
+      roleId: roleId,
       status: status,
     });
     const newUser = await user.save();
@@ -299,7 +299,7 @@ router.post("/add", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.patch("patch/:id", getUserByID, async (req, res) => {
+router.patch("/patch/:id", getUserByID, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -311,6 +311,15 @@ router.patch("patch/:id", getUserByID, async (req, res) => {
   }
   if (req.body.role != null) {
     res.user.role = req.body.role;
+  }
+  if (req.body.roleId != null) {
+    res.user.roleId = req.body.roleId;
+  }
+  if (req.body.role != null) {
+    res.user.role = req.body.role;
+  }
+  if (req.body.permissions != null) {
+    res.user.permissions = req.body.permissions;
   }
   if (req.body.status != null) {
     res.user.status = req.body.status;
