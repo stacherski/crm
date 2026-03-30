@@ -32,6 +32,7 @@ const options = {
 app.use(express.static("public", options));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //Swagger API
 app.use(
@@ -59,7 +60,6 @@ app.use("/api/role", roleRoutes);
 //auth login routes API
 const loginRoutes = require("./routes/loginRoutes");
 app.use("/auth/login", loginRoutes);
-
 
 app.get("/", (req, res) => {
   res.send({ message: "CRM API running" });

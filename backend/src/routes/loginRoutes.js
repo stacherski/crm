@@ -6,7 +6,7 @@ const User = require("../models/User");
 
 /**
  * @openapi
-* /auth/login:
+ * /auth/login:
  *   post:
  *     summary: Login a user
  *     tags: [Auth]
@@ -15,7 +15,7 @@ const User = require("../models/User");
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/AuthUser'
  *     responses:
  *       200:
  *         description: Successful login
@@ -24,16 +24,18 @@ const User = require("../models/User");
  */
 
 router.post("/", async (req, res) => {
-    const { email, password } = req.body;
-    console.log("Login attempt:", email);
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(req.body.password, user.passwordHash))) {
-        return res.status(401).json({ message: "Invalid credentials" });
-    }
-    // Generate JWT token
-    const token = jwt.sign({ user: user }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const { email, password } = req.body;
+  console.log("Login attempt:", email);
+  const user = await User.findOne({ email });
+  if (!user || !(await bcrypt.compare(req.body.password, user.passwordHash))) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+  // Generate JWT token
+  const token = jwt.sign({ user: user }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 
-    res.status(200).json({ token });
+  res.status(200).json({ token });
 });
 
 module.exports = router;

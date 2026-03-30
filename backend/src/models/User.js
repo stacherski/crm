@@ -67,6 +67,13 @@ const baseOptions = { timestamps: true };
  *             type: string
  *           __v:
  *             type: number
+ *     AuthUser:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
  *
  */
 
@@ -91,11 +98,11 @@ const UserSchema = new Schema(
 );
 
 UserSchema.pre("save", async function () {
-  if (!this.isModified("roleId")) return
-  const role = await mongoose.model("Role").findById(this.roleId)
-  this.role = role.name
-  this.permissions = role.permissions
-})
+  if (!this.isModified("roleId")) return;
+  const role = await mongoose.model("Role").findById(this.roleId);
+  this.role = role.name;
+  this.permissions = role.permissions;
+});
 
 const User = mongoose.model("User", UserSchema);
 
