@@ -16,13 +16,13 @@ function Nav() {
           <a href="/">Home</a>
         </li>
         <li level="1">
-          <a href="/components">Components</a>
+          <a href="/companies">Companies</a>
         </li>
         <li level="1">
-          <a href="/tokens">Design Tokens</a>
+          <a href="/pipelines">Pipelines</a>
         </li>
         <li level="1">
-          <a href="/patterns">Patterns</a>
+          <a href="/users">Users</a>
         </li>
       </ul>
     </nav>

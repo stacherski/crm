@@ -1,0 +1,7 @@
+.login-box {
+    max-width: calc(20 * var(--as-space-l));
+    margin: 0 auto;
+    padding: var(--as-space-l);
+    background-color: var(--as-color-background-panel);
+    border-radius: var(--as-border-radius-m);
+}

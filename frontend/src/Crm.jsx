@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import Nav from './components/Nav'
 import MainContent from './components/MainContent'
+import NavToggle from './components/NavToggle'
 
 function Crm() {
   return (
     <>
-      <Nav/>
+      <Nav />
       <MainContent />
-      <div className="menu-btn">
-        <as-class-toggle target-element="[layout] nav|.menu-overlay" target-class="navopen|overlayopen" button-class="btn btn-transparent" icon-name="bars"></as-class-toggle>
-      </div>
-      <div className="menu-overlay"></div>
+      <NavToggle />
     </>
   )
 }
