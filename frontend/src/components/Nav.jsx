@@ -14,16 +14,29 @@ function Nav() {
       </div>
       <ul>
         <li level="1">
-            <Link to="/dashboard">Dashboard</Link>
+          <div className="l1 wrapper">
+            <Link to="/">Home</Link>
+          </div>
         </li>
         <li level="1">
+          <div className="l1 wrapper">
+            <Link to="/login">Login</Link>
+          </div>
+        </li>
+        <li level="1">
+          <div className="l1 wrapper">
             <Link to="/users">Users</Link>
+          </div>
         </li>
         <li level="1">
+          <div className="l1 wrapper">
             <Link to="/company">Companies</Link>
+          </div>
         </li>
         <li level="1">
-            <Link to="/pipelines">Pipelines</Link>
+          <div className="l1 wrapper">
+            <Link to="/logout">Logout</Link>
+          </div>
         </li>
       </ul>
     </nav>

@@ -25,6 +25,7 @@ function Login() {
   }
 
   return (
+    <>
     <div className="form login-box">
       <h2>Login to CRM</h2>
 
@@ -67,6 +68,7 @@ function Login() {
         </div>
       </form>
     </div>
+    </>
   )
 }
 

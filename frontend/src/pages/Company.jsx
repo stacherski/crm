@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 function Company() {
-  const [company, setCompany] = useState(null)
+  const [company, setCompany] = useState([])
 
   useEffect(() => {
     async function fetchCompany() {
@@ -20,9 +20,30 @@ function Company() {
   }, [])
 
   return (
-    <ul>
-      {company && <li key={company._id}>{company.name}</li> }
-    </ul>
+    <as-table-sort sort filter>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {company ? company.map(c => (
+            <tr key={c._id}>
+              <td>{c.name}</td>
+              <td>{c.address}</td>
+              <td>{c.phone}</td>
+            </tr>
+          )) : (
+            <tr>
+              <td colSpan="3">No companies found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </as-table-sort>
   )
 }
 

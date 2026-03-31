@@ -74,6 +74,9 @@ app.use("/auth/login", loginRoutes);
 const meRoutes = require("./routes/meRoutes");
 app.use("/auth/me", meRoutes);
 
+const logoutRoutes = require("./routes/logoutRoutes");
+app.use("/logout", logoutRoutes);
+
 app.get("/", (req, res) => {
   res.send({ message: "CRM API running" });
 });
