@@ -31,11 +31,22 @@ router.post("/", async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
   // Generate JWT token
-  const token = jwt.sign({ user: user }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+  const accessToken = jwt.sign(
+    { user: user },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "1h",
+    },
+  );
+
+  res.cookie("crmAuthToken", accessToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 3600000,
   });
 
-  res.status(200).json({ token });
+  res.status(200).json({ message: `Logged in successfully!` });
 });
 
 module.exports = router;

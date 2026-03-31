@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Link } from "react-router-dom"
+
 
 function Nav() {
   return (
@@ -13,16 +14,16 @@ function Nav() {
       </div>
       <ul>
         <li level="1">
-          <a href="/">Home</a>
+            <Link to="/dashboard">Dashboard</Link>
         </li>
         <li level="1">
-          <a href="/companies">Companies</a>
+            <Link to="/users">Users</Link>
         </li>
         <li level="1">
-          <a href="/pipelines">Pipelines</a>
+            <Link to="/company">Companies</Link>
         </li>
         <li level="1">
-          <a href="/users">Users</a>
+            <Link to="/pipelines">Pipelines</Link>
         </li>
       </ul>
     </nav>

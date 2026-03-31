@@ -2,13 +2,18 @@ module.exports = {
   definition: {
     openapi: "3.0.0",
     info: { title: "CRM API Docs", version: "1.0.0" },
-    security: [{ api_key: [] }],
+    security: [{ api_key: [] }, { cookieAuth: [] }],
     components: {
       securitySchemes: {
-        api_key: {
+        // api_key: {
+        //   type: "apiKey",
+        //   in: "header",
+        //   name: "x-api-key",
+        // },
+        cookieAuth: {
           type: "apiKey",
-          in: "header",
-          name: "x-api-key",
+          in: "cookie",
+          name: "crmAuthToken",
         },
       },
     },
