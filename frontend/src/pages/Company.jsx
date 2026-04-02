@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
 function Company() {
   const [company, setCompany] = useState([])
@@ -6,7 +7,7 @@ function Company() {
   useEffect(() => {
     async function fetchCompany() {
       try {
-        const res = await fetch("http://localhost:8080/api/company/all", {
+        const res = await fetch("/api/company/all", {
           credentials: "include"
         })
         const json = await res.json()
@@ -32,7 +33,7 @@ function Company() {
         <tbody>
           {company ? company.map(c => (
             <tr key={c._id}>
-              <td>{c.name}</td>
+              <td><Link to={`/company/${c._id}`}>{c.name}</Link></td>
               <td>{c.address}</td>
               <td>{c.phone}</td>
             </tr>

@@ -3,7 +3,22 @@ const router = express.Router();
 const User = require("../models/User");
 const authToken = require("../middleware/authToken");
 
-// /api/me
+/**
+ * @openapi
+ * /auth/me:
+ *   post:
+ *     summary: Get current logged user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: User found and returned successfully
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AuthUser'
+ *       401:
+ *         description: User not found or not authorized
+ */
 router.get("/", authToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.user._id).select("-password");

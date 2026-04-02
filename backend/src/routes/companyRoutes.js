@@ -127,6 +127,60 @@ router.get("/query", async (req, res) => {
 
 /**
  * @openapi
+ * /api/company/search/{query}:
+ *   get:
+ *     summary: Get companies filtered by keyword search
+ *     description: |
+ *       **Notes:**
+ *       - Calling enpoint without query parameters will simply return all users, matching <b>/api/company/all</b> endpoint.
+ *       - Keyword search will look for passed value within multiple fields of company data, allowing for more flexible search options.
+ *       - Allowed fields are: _id, name, address, city, postCode, email, phone, vat, status, companyType, contactMethods, brokerId, createdAt, updatedAt
+ *       - For name, address, email, phone, vat fields query will search for passed value within field
+ *       - Example query: <b>/api/company/search/ACME</b>
+ *       - No support for passing query within Swagger API Docs, use Insomnia or Postman
+ *     tags: [Company]
+ *     responses:
+ *       200:
+ *         description: A list of companies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Company'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "Bad request"}
+ */
+
+router.get("/search/:query", async (req, res) => {
+  const allowedFields = [
+    "name",
+    "address",
+    "city",
+    "postCode",
+    "email",
+    "phone",
+    "vat",
+    "status"
+  ];
+  const { query } = req.params;
+
+  const searchQuery = {
+    $or: allowedFields.map((field) => ({
+      [field]: { $regex: query, $options: "i" },
+    })),
+  };
+  const companies = await Company.find(searchQuery);
+  res.json(companies);
+});
+
+/**
+ * @openapi
  * /api/company/add:
  *  post:
  *     summary: Create new company

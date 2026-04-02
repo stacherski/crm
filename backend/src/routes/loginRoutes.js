@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
   res.cookie("crmAuthToken", accessToken, {
     httpOnly: true,
     secure: false,
-    sameSite: "none",
+    sameSite: "lax",
     maxAge: 3600000,
   });
 

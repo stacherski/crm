@@ -7,14 +7,17 @@
   "security": [
     {
       "api_key": []
+    },
+    {
+      "cookieAuth": []
     }
   ],
   "components": {
     "securitySchemes": {
-      "api_key": {
+      "cookieAuth": {
         "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key"
+        "in": "cookie",
+        "name": "crmAuthToken"
       }
     },
     "schemas": {
@@ -280,6 +283,43 @@
         }
       }
     },
+    "/api/company/search/{query}": {
+      "get": {
+        "summary": "Get companies filtered by keyword search",
+        "description": "**Notes:**\n- Calling enpoint without query parameters will simply return all users, matching <b>/api/company/all</b> endpoint.\n- Keyword search will look for passed value within multiple fields of company data, allowing for more flexible search options.\n- Allowed fields are: _id, name, address, city, postCode, email, phone, vat, status, companyType, contactMethods, brokerId, createdAt, updatedAt\n- For name, address, email, phone, vat fields query will search for passed value within field\n- Example query: <b>/api/company/search/ACME</b>\n- No support for passing query within Swagger API Docs, use Insomnia or Postman\n",
+        "tags": [
+          "Company"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of companies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/company/add": {
       "post": {
         "summary": "Create new company",
@@ -508,6 +548,45 @@
           },
           "401": {
             "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "summary": "Logout a user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful logout"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "post": {
+        "summary": "Get current logged user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "User found and returned successfully"
+          },
+          "401": {
+            "description": "User not found or not authorized"
+          },
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthUser"
+              }
+            }
           }
         }
       }

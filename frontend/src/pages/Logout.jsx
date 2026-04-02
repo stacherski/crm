@@ -1,21 +1,25 @@
+import { useEffect } from "react"
+
 function Logout() {
+  useEffect(() => {
+    async function handleLogout() {
+      const res = await fetch("/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
 
-  async function handleLogout() {
-    const res = await fetch("http://localhost:8080/logout", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
+      if (res.status === 200) {
+        setTimeout(() => {
+          window.location.href = "/login"
+        }, 1500)
       }
-    })
-
-    if (res.status === 200) {
-      setTimeout(() => {window.location.href = "http://localhost:5173/login"},3000)
-      return
     }
-  }
 
-  handleLogout()
+    handleLogout()
+  }, [])
 
   return (
     <div className="logout">
