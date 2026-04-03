@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { Link, useSearchParams } from "react-router-dom"
+import { TitleContext } from "./Template"
 
 function Search() {
   const [searchParams] = useSearchParams()
   const [searchResults, setSearchResults] = useState([])
 
+  const { setTitle } = useContext(TitleContext)
+
   useEffect(() => {
+    if (!searchParams.get("search")) {
+      setSearchResults([])
+      return
+    }
     async function fetchSearchResults() {
       try {
         const res = await fetch(`/api/company/search/${searchParams.get("search")}`, {
@@ -23,6 +30,17 @@ function Search() {
       fetchSearchResults()
     }
   }, [searchParams])
+
+  useEffect(() => {
+    if (searchParams.get("search") && searchResults) {
+      setTitle(`Search results for "${searchParams.get("search")}"`)
+      document.title = `Search results for "${searchParams.get("search")}" - CRM`
+    }
+    else {
+      setTitle("Search")
+      document.title = "Search - CRM"
+    }
+  }, [searchParams, setTitle])
 
   return (
     <div>

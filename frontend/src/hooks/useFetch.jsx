@@ -36,7 +36,13 @@ export function useFetch(url, options = {}, deps = []) {
                 timestamps[url] = Date.now()
                 setData(json)
             } catch (err) {
+                console.error("Fetch error:", err)
                 if (err.name !== "AbortError") setError(err.message)
+                // if (err.message === "Unauthorized") {
+                //     setTimeout(() => {
+                //         window.location.href = "/login"
+                //     }, 1500)
+                // }
             } finally {
                 setLoading(false)
             }

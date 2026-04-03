@@ -1,6 +1,15 @@
 import { useState } from "react"
+import { useContext, useEffect } from "react"
+import { TitleContext } from "./Template"
 
 function Login() {
+  const { setTitle } = useContext(TitleContext)
+
+  useEffect(() => {
+    setTitle("Login to CRM")
+    document.title = "Login - CRM"
+  }, [setTitle])
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -17,7 +26,7 @@ function Login() {
     })
 
     if (res.status === 200) {
-      window.location.href = "/company"
+      window.location.href = "/companies"
       return
     }
 

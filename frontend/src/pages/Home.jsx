@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
+import { TitleContext } from "./Template"
 
 function Home() {
+  const { setTitle } = useContext(TitleContext)
+
+  useEffect(() => {
+    setTitle("Home")
+    document.title = "Home - CRM"
+  }, [setTitle])
 
   return (
     <div>

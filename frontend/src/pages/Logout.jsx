@@ -1,6 +1,23 @@
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
+import { TitleContext } from "./Template"
 
 function Logout() {
+  const { setTitle } = useContext(TitleContext)
+  const logoutTimeout = 1500
+  const maxDots = 5
+
+  useEffect(() => {
+    setTitle("Logout")
+    let dotCount = 1
+
+    const interval = setInterval(() => {
+      document.title = `Logging you out${".".repeat(dotCount)} - CRM`
+      dotCount++
+    }, logoutTimeout / maxDots)
+
+    return () => clearInterval(interval)
+  }, [setTitle])
+
   useEffect(() => {
     async function handleLogout() {
       const res = await fetch("/auth/logout", {
@@ -14,7 +31,7 @@ function Logout() {
       if (res.status === 200) {
         setTimeout(() => {
           window.location.href = "/login"
-        }, 1500)
+        }, logoutTimeout)
       }
     }
 

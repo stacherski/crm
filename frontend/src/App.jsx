@@ -21,8 +21,8 @@ function App() {
             <Route path="/" element={<Template><Home /></Template>} />
             <Route path="/login" element={<Template><Login /></Template>} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/company" element={<Template><Companies /></Template>} />
-              <Route path="/company/:id" element={<Template><CompanyDetails /></Template>} />
+              <Route path="/companies" element={<Template><Companies /></Template>} />
+              <Route path="/companies/:id" element={<Template><CompanyDetails /></Template>} />
               <Route path="/users" element={<Template><Users /></Template>} />
               <Route path="/users/:id" element={<Template><UserDetails /></Template>} />
               <Route path="/logout" element={<Template><Logout /></Template>} />

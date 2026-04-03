@@ -1,18 +1,30 @@
-import { Link, useParams } from "react-router-dom"
-import { useFetch } from "../components/useFetch"
+import { Link } from "react-router-dom"
+import { useFetch } from "../hooks/useFetch"
 import { Loading } from "../components/Loading"
-import { isEmpty } from "../components/isEmpty"
+import { useContext, useEffect } from "react"
+import { TitleContext } from "./Template"
 
 function Users() {
+
   const usersUrl = "/api/user/all"
+
+
   const { data: users, loading, error } = useFetch(usersUrl, { credentials: "include" })
+  const { setTitle } = useContext(TitleContext)
+
+  useEffect(() => {
+    if (users)
+      setTitle("Users")
+    document.title = "Users - CRM"
+  }, [users, setTitle])
 
   if (loading) return <Loading loadingText="Loading users..." />
   if (error) return <p>Error fetching users: {error}</p>
 
+
   return (
     <as-table-sort sort>
-      <table className="table">
+      <table className="table equal">
         <thead>
           <tr>
             <th>Name</th>

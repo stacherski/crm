@@ -172,18 +172,18 @@ body a {
 }
 
 [data-layout] nav ul li a:is(:FOCUS, :ACTIVE),
-[data-layout] nav ul li[active]>div.wrapper>a {
+[data-layout] nav ul li.active>div.wrapper>a {
     color: var(--as-color-text-nav);
     background-color: var(--as-color-background-nav-strong);
     border-inline-start-color: var(--as-color-text-nav);
 }
 
 [data-layout] nav ul li a:is(:FOCUS, :ACTIVE) span,
-[data-layout] nav ul li[active]>div.wrapper>a span {
+[data-layout] nav ul li.active>div.wrapper>a span {
     color: var(--as-color-text-nav);
 }
 
-[data-layout] nav ul li[active]>div.wrapper>as-icon {
+[data-layout] nav ul li.active>div.wrapper>as-icon {
     rotate: 180deg;
 }
 
@@ -197,7 +197,7 @@ body a {
     transition: all var(--as-time-s) ease-in-out;
 }
 
-[data-layout] nav ul li[level="1"][active]>div:last-child {
+[data-layout] nav ul li[level="1"].active>div:last-child {
     grid-template-rows: 1fr;
 }
 

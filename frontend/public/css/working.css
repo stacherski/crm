@@ -72,3 +72,13 @@
         }
     }
 }
+
+.grid {
+    display: grid;
+    gap: var(--as-space-l);
+    justify-items: center;
+}
+
+.align-bottom {
+    margin-block-start: auto;
+}

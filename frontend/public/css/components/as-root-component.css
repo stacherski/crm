@@ -157,18 +157,18 @@ body a {
 }
 
 [layout] nav ul li a:is(:FOCUS, :ACTIVE),
-[layout] nav ul li[active]>div.wrapper>a {
+[layout] nav ul li.active>div.wrapper>a {
     color: var(--as-color-text-nav);
     background-color: var(--as-color-background-nav-strong);
     border-inline-start-color: var(--as-color-text-nav);
 }
 
 [layout] nav ul li a:is(:FOCUS, :ACTIVE) span,
-[layout] nav ul li[active]>div.wrapper>a span {
+[layout] nav ul li.active>div.wrapper>a span {
     color: var(--as-color-text-nav);
 }
 
-[layout] nav ul li[active]>div.wrapper>as-icon {
+[layout] nav ul li.active>div.wrapper>as-icon {
     rotate: 180deg;
 }
 
@@ -182,7 +182,7 @@ body a {
     transition: all var(--as-time-s) ease-in-out;
 }
 
-[layout] nav ul li[level="1"][active]>div:last-child {
+[layout] nav ul li[level="1"].active>div:last-child {
     grid-template-rows: 1fr;
 }
 
