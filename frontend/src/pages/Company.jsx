@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { Loading } from "../components/Loading"
+import { ShowError } from "../components/ShowError"
+
 import { useContext, useEffect } from "react"
 import { TitleContext } from "./Template"
 
@@ -15,7 +17,7 @@ function Company() {
   }, [data])
 
   if (loading) return <Loading loadingText="Loading companies..." />
-  if (error) return <p>Error: {error}</p>
+  if (error) return <ShowError error={error} />
 
   return (
     <as-table-sort sort filter>

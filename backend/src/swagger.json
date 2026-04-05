@@ -6,16 +6,13 @@
   },
   "security": [
     {
-      "api_key": []
-    },
-    {
       "cookieAuth": []
     }
   ],
   "components": {
     "securitySchemes": {
       "cookieAuth": {
-        "type": "apiKey",
+        "type": "cookieAuth",
         "in": "cookie",
         "name": "crmAuthToken"
       }
@@ -453,6 +450,19 @@
           },
           "400": {
             "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Bad request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": {

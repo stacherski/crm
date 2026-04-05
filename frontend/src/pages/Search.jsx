@@ -1,53 +1,46 @@
-import { useEffect, useState, useContext } from "react"
+import { useEffect, useContext } from "react"
 import { Link, useSearchParams } from "react-router-dom"
+import { useFetch } from "../hooks/useFetch"
+import { ShowError } from "../components/ShowError"
+import { Loading } from "../components/Loading"
 import { TitleContext } from "./Template"
 
 function Search() {
   const [searchParams] = useSearchParams()
-  const [searchResults, setSearchResults] = useState([])
 
   const { setTitle } = useContext(TitleContext)
 
   useEffect(() => {
-    if (!searchParams.get("search")) {
-      setSearchResults([])
-      return
-    }
-    async function fetchSearchResults() {
-      try {
-        const res = await fetch(`/api/company/search/${searchParams.get("search")}`, {
-          credentials: "include"
-        })
-        const data = await res.json()
-        setSearchResults(data)
-        console.log(searchResults)
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
-    if (searchParams.get("search")) {
-      fetchSearchResults()
-    }
-  }, [searchParams])
-
-  useEffect(() => {
-    if (searchParams.get("search") && searchResults) {
+    if (searchParams && searchParams.get("search")) {
       setTitle(`Search results for "${searchParams.get("search")}"`)
       document.title = `Search results for "${searchParams.get("search")}" - CRM`
     }
     else {
-      setTitle("Search")
       document.title = "Search - CRM"
     }
   }, [searchParams, setTitle])
+
+  const {
+    data: searchResults,
+    loading: companyLoading,
+    error: companyError
+  } = useFetch(`/api/company/search/${searchParams.get("search")}`, { credentials: "include" }, [searchParams])
+
+  if (companyError) {
+    return <ShowError error={companyError} />
+  }
+
+  if (companyLoading) {
+    return <Loading loadingText="Loading search results..." />
+  }
+
 
   return (
     <div>
       <h1>Search</h1>
       <p>Welcome to the Search page!</p>
       <p>Search results for <strong>"{searchParams.get("search")}"</strong>:</p>
-      {searchResults.length > 0 ? (
+      {searchResults && searchResults.length > 0 ? (
         <>
           <ul>
             {searchResults.map(result => (

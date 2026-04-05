@@ -3,6 +3,7 @@ import { useFetch } from "../hooks/useFetch"
 import { Loading } from "../components/Loading"
 import { useContext, useEffect } from "react"
 import { TitleContext } from "./Template"
+import { ShowError } from "../components/ShowError"
 
 function Users() {
 
@@ -19,7 +20,7 @@ function Users() {
   }, [users, setTitle])
 
   if (loading) return <Loading loadingText="Loading users..." />
-  if (error) return <p>Error fetching users: {error}</p>
+  if (error) return <ShowError error={error} />
 
 
   return (

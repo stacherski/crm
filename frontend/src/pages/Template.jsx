@@ -12,8 +12,8 @@ export function Template({ children }) {
       <TitleContext.Provider value={{ setTitle }}>
         <Nav />
         <section data-content>
-          <header>
-            <h1>CRM » {title}</h1>
+          <header style={{ fontSize: 'var(--as-font-size-xxl)', fontFamily: 'var(--as-font-regular)' }}>
+            CRM » {title}
           </header>
           <article>
             {children}

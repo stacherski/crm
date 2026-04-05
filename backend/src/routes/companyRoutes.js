@@ -1,12 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Company = require("../models/Company");
-// const User = require("../models/User");
-// const Pipeline = require("../models/Pipeline");
-// const Contact = require("../models/Contact");
+const userPermissions = require("../middleware/userPermissions")
 
 const getCompanyByID = require("../middleware/getCompanyById");
 
+const permissions = {
+  all: ["user:read"],
+  query: ["user:read"],
+  search: ["user:read"],
+  add: ["user:write"],
+  patch: ["user:write"],
+  delete: ["user:delete"],
+}
+
+console.log('/api/company')
 /**
  * @openapi
  * /api/company/all:
@@ -31,7 +39,7 @@ const getCompanyByID = require("../middleware/getCompanyById");
  *               example: {message: "Bad request"}
  */
 
-router.get("/all", async (req, res) => {
+router.get("/all", userPermissions(permissions.all), async (req, res) => {
   const companies = await Company.find();
   res.json(companies);
 });
@@ -68,7 +76,7 @@ router.get("/all", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.get("/query", async (req, res) => {
+router.get("/query", userPermissions(permissions.query), async (req, res) => {
   const allowedFields = [
     "_id",
     "name",
@@ -157,7 +165,7 @@ router.get("/query", async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.get("/search/:query", async (req, res) => {
+router.get("/search/:query", userPermissions(permissions.search), async (req, res) => {
   const allowedFields = [
     "name",
     "address",
@@ -228,7 +236,7 @@ router.get("/search/:query", async (req, res) => {
  *               example: {message: "Company not found"}
  */
 
-router.post("/add", async (req, res) => {
+router.post("/add", userPermissions(permissions.add), async (req, res) => {
   try {
     const {
       name,
@@ -307,9 +315,17 @@ router.post("/add", async (req, res) => {
  *             schema:
  *               type: object
  *               example: {message: "Bad request"}
- */
+ *       404:
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example: {message: "Bad request"}
+*/
 
-router.patch("/patch/:id", getCompanyByID, async (req, res) => {
+router.patch("/patch/:id", userPermissions(permissions.patch), getCompanyByID, async (req, res) => {
+  console.log('patch')
   if (req.body.name != null) {
     res.company.name = req.body.name;
   }
@@ -386,8 +402,7 @@ router.patch("/patch/:id", getCompanyByID, async (req, res) => {
  *               type: object
  *               example: {message: "Company not found"}
  */
-
-router.delete("/delete/:id", getCompanyByID, async (req, res) => {
+router.delete("/delete/:id", userPermissions(permissions.delete), getCompanyByID, async (req, res) => {
   try {
     await res.company.deleteOne();
     res.json({ message: `Company ID: ${req.params.id} deleted` });

@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { Loading } from "../components/Loading"
 import { isEmpty } from "../components/isEmpty"
+import { ShowError } from "../components/ShowError"
 import { useContext, useEffect } from "react"
 import { TitleContext } from "./Template"
 
@@ -15,7 +16,6 @@ function UserDetails() {
   const companiesUrl = broker ? `/api/user/${id}/company` : null
   const { data: companies, loading: companiesLoading, error: companiesError } = useFetch(companiesUrl, { credentials: "include" }, [companiesUrl])
 
-
   useEffect(() => {
     if (broker && broker[0]) {
       setTitle(`Users » ${broker[0].name} ${broker[0].surname}`)
@@ -23,9 +23,10 @@ function UserDetails() {
     }
   }, [broker, setTitle])
 
+  if (companiesError) return <ShowError error={companiesError} />
+  if (brokerError) return <ShowError error={brokerError} />
+
   if (brokerLoading || companiesLoading) return <Loading />
-  if (brokerError) return <p>Error fetching broker: {brokerError}</p>
-  if (companiesError) return <p>Error fetching companies: {companiesError}</p>
 
   const b = broker[0]
 
