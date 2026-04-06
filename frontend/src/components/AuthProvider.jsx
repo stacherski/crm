@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
                 })
                 if (!res.ok) throw new Error()
                 const data = await res.json()
-                setUser(data.user)
+                setUser(data)
             } catch {
                 setUser(null)
             } finally {

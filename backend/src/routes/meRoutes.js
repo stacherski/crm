@@ -21,9 +21,17 @@ const authToken = require("../middleware/authToken");
  */
 router.get("/", authToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.user._id).select("-password");
+    const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ user });
+
+    const payload = {
+      _id: user._id,
+      role: user.role,
+      permissions: user.permissions,
+      name: user.name + " " + user.surname,
+    }
+
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }

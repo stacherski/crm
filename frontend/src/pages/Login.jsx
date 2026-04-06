@@ -10,6 +10,7 @@ function Login() {
     document.title = "Login - CRM"
   }, [setTitle])
 
+  // email & password variables to be set by respective input fields with onChange calling setEmail & setPasswords
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -18,7 +19,7 @@ function Login() {
 
     const res = await fetch("/auth/login", {
       method: "POST",
-      credentials: "include",
+      credentials: "include", //this is necessary to authenticate user in backend
       headers: {
         "Content-Type": "application/json"
       },

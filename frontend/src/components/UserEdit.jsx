@@ -1,26 +1,20 @@
 import { useState, useEffect } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
-import { Loading } from "./Loading"
 
-function CompanyEdit({ company }) {
-    const [form, setForm] = useState(company)
-    const [fieldStatusValue, setFieldStatusValue] = useState(["a"])
+function UserEdit({ broker }) {
+    const [form, setForm] = useState(broker)
     const { patch, loading: loadingEdit, error: errorEdit } = useApi()
 
     useEffect(() => {
-        setForm(company)
-    }, [company])
-
-    useEffect(() => {
-        console.log('Form state:', form)
-    }, [form])
+        setForm(broker)
+    }, [broker])
 
     const {
-        data: brokers,
-        loading: brokersLoading,
-        error: brokersError
-    } = useFetch(`/api/user/all`, { credentials: "include" })
+        data: roles,
+        loading: rolesLoading,
+        error: rolesError
+    } = useFetch(`/api/role`, { credentials: "include" })
 
     const fields = {
         name: {
@@ -28,35 +22,14 @@ function CompanyEdit({ company }) {
             type: "text",
             required: true,
             multiple: false,
-            label: "Company name"
+            label: "Name"
         },
-        address: {
+        surname: {
             field: "input",
             type: "text",
             required: true,
             multiple: false,
-            label: "Address"
-        },
-        city: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "City"
-        },
-        postCode: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "Post code"
-        },
-        vat: {
-            field: "input",
-            type: "text",
-            required: false,
-            multiple: false,
-            label: "VAT No"
+            label: "Surname"
         },
         email: {
             field: "input",
@@ -65,69 +38,64 @@ function CompanyEdit({ company }) {
             multiple: false,
             label: "E-mail"
         },
-        phone: {
+        password: {
             field: "input",
             type: "text",
             required: true,
             multiple: false,
-            label: "Phone"
+            label: "Password"
+        },
+        roleId: {
+            field: "select",
+            type: "",
+            required: true,
+            multiple: false,
+            label: "User role",
+            options: []
         },
         status: {
             field: "select",
             type: "",
             required: true,
             multiple: false,
-            label: "Company status",
+            label: "User status",
             options: [
                 { label: "Active", value: "active" },
                 { label: "Inactive", value: "inactive" }
             ]
-            // options: ["active", "inactive"]
-        },
-        companyType: {
-            field: "select",
-            type: "",
-            required: true,
-            label: "Company type",
-            multiple: false,
-            options: [
-                { label: "Lead", value: "lead" },
-                { label: "Prospect", value: "prospect" },
-                { label: "Client", value: "client" }
-            ]
-        },
-        contactMethods: {
-            field: "select",
-            type: "",
-            required: true,
-            label: "Contact methods",
-            multiple: true,
-            options: [
-                { label: "E-mail", value: "email" },
-                { label: "Phone", value: "phone" },
-                { label: "SMS", value: "sms" },
-                { label: "Other", value: "other" }
-            ]
-        },
-        brokerId: {
-            field: "select",
-            type: "",
-            required: true,
-            label: "Broker name",
-            multiple: false,
-            options: []
         }
     }
-    if (brokers)
-        fields.brokerId.options = brokers.map(b => ({
-            value: b._id,
-            label: `${b.name} ${b.surname} (${b.email})`
+    if (roles)
+        fields.roleId.options = roles.map(r => ({
+            value: r._id,
+            label: `${r.name} (${r.permissions.join(', ')})`
         }))
 
     function SelectWrapper({ multiple, children }) {
         return multiple
             ? <as-select-multiple>{children}</as-select-multiple>
             : <as-select>{children}</as-select>
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        console.log("formData", formData)
+        const payload = Object.fromEntries(
+            Object.keys(fields).map((key) => {
+                const field = fields[key];
+
+                if (field.multiple) {
+                    return [key, formData.getAll(key)]; // returns array
+                }
+                return [key, formData.get(key)];
+            })
+        );
+        const updated = await patch(`/api/user/patch/${broker._id}`, payload)
+        if (errorEdit)
+            return <p>Please fill in all fields</p>
+        if (!loadingEdit && !errorEdit)
+            location.reload()
     }
 
     const handleChange = (e) => {
@@ -143,26 +111,6 @@ function CompanyEdit({ company }) {
             ...prev,
             [name]: val
         }))
-    }
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-
-        const payload = Object.fromEntries(
-            Object.keys(fields).map((key) => {
-                const field = fields[key];
-
-                if (field.multiple) {
-                    return [key, formData.getAll(key)]; // returns array
-                }
-                return [key, formData.get(key)];
-            })
-        );
-        const updated = await patch(`/api/company/patch/${company._id}`, payload)
-        if (!loadingEdit && !errorEdit)
-
-            location.reload()
     }
 
     const normalizeSelectValue = (value, multiple) => {
@@ -184,10 +132,9 @@ function CompanyEdit({ company }) {
         return String(value)
     }
 
-
     return (
         <>
-            <h2>Edit company details</h2>
+            <h2>Edit user</h2>
             <div className="form">
                 <form method="POST" onSubmit={handleSubmit}>
                     {Object.entries(fields).map(([key, config], index) => {
@@ -211,9 +158,7 @@ function CompanyEdit({ company }) {
                         }
 
                         if (config.field === 'select') {
-
                             const normalizedValue = normalizeSelectValue(value, config.multiple)
-
                             return (
                                 <div key={key} className="data-line filtering">
                                     <label>{config.label}</label>
@@ -227,10 +172,6 @@ function CompanyEdit({ company }) {
                                             {!config.multiple && <option value="">Select...</option>}
 
                                             {config.options.map((opt, index) => {
-                                                const matchesValue = config.multiple
-                                                    ? Array.isArray(normalizedValue) && normalizedValue.includes(opt.value)
-                                                    : normalizedValue === opt.value
-
                                                 return (
                                                     <option key={opt.value + index} value={opt.value}>
                                                         {opt.label}
@@ -246,7 +187,7 @@ function CompanyEdit({ company }) {
                     })}
 
                     <div className="data-line filtering">
-                        <input type="submit" className="btn" value="Save" />
+                        <input type="submit" className="btn" value="Save changes" />
                     </div>
                 </form >
             </div >
@@ -254,4 +195,4 @@ function CompanyEdit({ company }) {
     )
 }
 
-export default CompanyEdit
+export default UserEdit

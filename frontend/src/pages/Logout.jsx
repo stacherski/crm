@@ -11,7 +11,7 @@ function Logout() {
     let dotCount = 1
 
     const interval = setInterval(() => {
-      document.title = `Logging you out${".".repeat(dotCount)} - CRM`
+      document.title = `Logging you out${".".repeat(dotCount % maxDots)} - CRM`
       dotCount++
     }, logoutTimeout / maxDots)
 

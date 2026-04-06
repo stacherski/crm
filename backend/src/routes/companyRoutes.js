@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Company = require("../models/Company");
 const userPermissions = require("../middleware/userPermissions")
-
 const getCompanyByID = require("../middleware/getCompanyById");
 
 const permissions = {

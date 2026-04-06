@@ -32,6 +32,7 @@ app.use(
 app.use(cookieParser());
 // app.use("/api", apiKey);
 app.use("/api", authToken);
+
 const options = {
   // setHeaders(res, path, stat) {
   //   res.set("x-api-key", process.env.API_KEY);
@@ -76,6 +77,9 @@ app.use("/auth/me", meRoutes);
 
 const logoutRoutes = require("./routes/logoutRoutes");
 app.use("/auth/logout", logoutRoutes);
+
+// const refreshRoutes = require("./routes/refreshRoutes");
+// app.use("/auth/refresh", refreshRoutes);
 
 app.get("/", (req, res) => {
   res.send({ message: "CRM API running" });

@@ -1,0 +1,167 @@
+import { useState, useEffect } from "react"
+import { useFetch } from "../hooks/useFetch"
+import { useApi } from "../hooks/useApi"
+
+function UserAdd() {
+    const [form, setForm] = useState(null)
+    const { post, loading: loadingAdd, error: errorAdd } = useApi()
+
+    useEffect(() => {
+        setForm()
+    }, [])
+
+    useEffect(() => {
+        // console.log('Form state:', form)
+    }, [form])
+
+    const {
+        data: roles,
+        loading: rolesLoading,
+        error: rolesError
+    } = useFetch(`/api/role`, { credentials: "include" })
+
+    const fields = {
+        name: {
+            field: "input",
+            type: "text",
+            required: true,
+            multiple: false,
+            label: "Name"
+        },
+        surname: {
+            field: "input",
+            type: "text",
+            required: true,
+            multiple: false,
+            label: "Surname"
+        },
+        email: {
+            field: "input",
+            type: "email",
+            required: true,
+            multiple: false,
+            label: "E-mail"
+        },
+        password: {
+            field: "input",
+            type: "text",
+            required: true,
+            multiple: false,
+            label: "Password"
+        },
+        roleId: {
+            field: "select",
+            type: "",
+            required: true,
+            multiple: false,
+            label: "User role",
+            options: []
+        },
+        status: {
+            field: "select",
+            type: "",
+            required: true,
+            multiple: false,
+            label: "User status",
+            options: [
+                { label: "Active", value: "active" },
+                { label: "Inactive", value: "inactive" }
+            ]
+        }
+    }
+    if (roles)
+        fields.roleId.options = roles.map(r => ({
+            value: r._id,
+            label: `${r.name} (${r.permissions.join(', ')})`
+        }))
+
+    function SelectWrapper({ multiple, children }) {
+        return multiple
+            ? <as-select-multiple>{children}</as-select-multiple>
+            : <as-select>{children}</as-select>
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        console.log("formData", formData)
+        const payload = Object.fromEntries(
+            Object.keys(fields).map((key) => {
+                const field = fields[key];
+
+                if (field.multiple) {
+                    return [key, formData.getAll(key)]; // returns array
+                }
+                return [key, formData.get(key)];
+            })
+        );
+        const added = await post(`/api/user/add`, payload)
+        if (errorAdd)
+            return <p>Please fill in all fields</p>
+        if (!loadingAdd && !errorAdd)
+            location.reload()
+    }
+
+    function SelectWrapper({ multiple, children }) {
+        return multiple
+            ? <as-select-multiple>{children}</as-select-multiple>
+            : <as-select>{children}</as-select>
+    }
+
+    return (
+        <>
+            <h2>Add new user</h2>
+            <div className="form">
+                <form method="POST" onSubmit={handleSubmit}>
+                    {Object.entries(fields).map(([key, config], index) => {
+                        if (config.field === 'input') {
+                            return (
+                                <div key={key + index} className="data-line filtering">
+                                    <as-form-validation>
+                                        <label>{config.label}</label>
+                                        <input
+                                            name={key}
+                                            type={config.type}
+                                            required={config.required}
+                                        />
+                                    </as-form-validation>
+                                </div>
+                            )
+                        }
+
+                        if (config.field === 'select') {
+                            return (
+                                <div key={key} className="data-line filtering">
+                                    <label>{config.label}</label>
+                                    <SelectWrapper multiple={config.multiple}>
+                                        <select
+                                            name={key}
+                                            multiple={config.multiple}
+                                        >
+                                            {!config.multiple && <option value="">Select...</option>}
+
+                                            {config.options.map((opt, index) => {
+                                                return (
+                                                    <option key={opt.value + index} value={opt.value}>
+                                                        {opt.label}
+                                                    </option>
+                                                )
+                                            })}
+                                        </select>
+                                    </SelectWrapper>
+                                </div>
+                            )
+                        }
+
+                    })}
+
+                    <div className="data-line filtering">
+                        <input type="submit" className="btn" value="Add new user" />
+                    </div>
+                </form >
+            </div >
+        </>
+    )
+}
+
+export default UserAdd

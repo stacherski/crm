@@ -1,30 +1,33 @@
 import { Link, useParams } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
+import { useApi } from "../hooks/useApi"
 import { Loading } from "../components/Loading"
 import { isEmpty } from "../components/isEmpty"
 import { ShowError } from "../components/ShowError"
-import { useContext, useEffect, useState, useRef } from "react"
+import { useContext, useEffect, useState } from "react"
 import { TitleContext } from "./Template"
 import CompanyEdit from "../components/CompanyEdit"
+import Drawer from "../components/Drawer"
 import { useAuth } from "../components/AuthProvider"
 
 function CompanyDetails() {
-
   const { user } = useAuth()
-
   const { id } = useParams()
 
   const { setTitle } = useContext(TitleContext)
 
-  const [refreshKey, setRefreshKey] = useState(0)
-
-  const { data: company, loading: companyLoading, error: companyError } = useFetch(`/api/company/query?_id=${id}`, { credentials: "include" }, [id, refreshKey])
+  const companyUrl = `/api/company/query?_id=${id}`
+  const { data: company, loading: companyLoading, error: companyError } = useFetch(companyUrl, { credentials: "include" }, [id])
 
   const brokerUrl = company ? `/api/user/query?_id=${company[0].brokerId}` : null
   const { data: broker, loading: brokerLoading, error: brokerError } = useFetch(brokerUrl, { credentials: "include" }, [brokerUrl])
 
-  const [editDrawerState, setEditDrawerState] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
+  const { del, loading: loadingDelete, error: errorDelete } = useApi()
+
+  //Effects (must be on top)
+  //Set title via TitleContext from <Template/>
   useEffect(() => {
     if (company && company[0]) {
       setTitle(`Companies » ${company[0].name}`)
@@ -32,25 +35,28 @@ function CompanyDetails() {
     }
   }, [company, setTitle])
 
-  useEffect(() => {
-    setEditDrawerState(true)
-  }, [editDrawerState])
-
+  //Error handling for fetching company & broker data
   if (companyError) return <ShowError error={companyError} />
   if (brokerError) return <ShowError error={brokerError} />
 
+  //Loading state for fetching company & broker data
+  //Loading is after errors, because only after errors loading state is set to false
+  //If Loading state was before Errors, it will be stuck on Loading if there are errors
   if (companyLoading || brokerLoading) return <Loading loadingText="Loading company and broker information..." />
 
+  //simplification of the comapmy & broker return data
   const c = company[0]
   const b = broker[0]
 
+  //setting up flags to indicate user permissions to edit & delete company data
+  //use below in component return method to conditionally render Edit & Delete buttons as well as editing form (including <Drawer/>)
   const canPatch = user && user.permissions.includes("user:write")
   const canDelete = user && user.permissions.includes("user:delete")
 
-
-  document.addEventListener('as-drawer:created', () => {
-    setEditDrawerState(true)
-  })
+  async function deleteCompany(c) {
+    const deleted = await del(`/api/company/delete/${c._id}`)
+    location.href = '/companies'
+  }
 
   return (
     <>
@@ -68,11 +74,14 @@ function CompanyDetails() {
               <div style={{ display: 'grid', gap: 'var(--as-space-m)', alignItems: 'start' }}>
                 <div className="edit-bar">
                   {canPatch && company && company[0] &&
-                    <as-class-toggle button-class="btn" button-text="Edit" target-element=".slide-in" target-class="slide-in-show" icon-name="pen" icon-rotate="1turn"></as-class-toggle>
+                    <a className="btn" onClick={() => setIsOpen(!isOpen)}>
+                      Edit
+                      <as-icon name="--as-icon-pen" size="m"></as-icon>
+                    </a>
                   }
                   {canDelete && company && company[0] &&
                     (
-                      <a href={``} className="btn btn-error">
+                      <a onClick={() => deleteCompany(c)} className="btn btn-error">
                         Delete
                         <as-icon name="--as-icon-trashcan" size="m"></as-icon>
                       </a>
@@ -109,9 +118,9 @@ function CompanyDetails() {
             // this is editing form rendered conditionally based on user permissions
             // represented by <<canPatch>> flag & presence of the <<company>> object
             canPatch && company[0] && (
-              <div className="slide-in" id="editForm" position="left">
+              <Drawer onClose={() => setIsOpen(false)} isOpen={isOpen}>
                 <CompanyEdit company={c} />
-              </div>
+              </Drawer>
             )
           }
 

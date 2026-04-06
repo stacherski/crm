@@ -61,7 +61,7 @@ function Nav() {
       </ul>
       <div className="clock">
         <div className="grid">
-          <p>Welcome, {user ? <Link to={`/users/${user._id}`}>{user.name} {user.surname}</Link> : "Guest"}!</p>
+          <p>Welcome {user ? <Link to={`/users/${user._id}`}>{user.name} {user.surname}</Link> : "Guest"}</p>
           <as-dot-matrix-clock size="10px"></as-dot-matrix-clock>
         </div>
       </div>
