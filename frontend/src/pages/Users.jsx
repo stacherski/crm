@@ -10,21 +10,27 @@ import UserAdd from "../components/UserAdd"
 
 function Users() {
   const { user } = useAuth()
+  
   const usersUrl = "/api/user/all"
   const { data: users, loading, error } = useFetch(usersUrl, { credentials: "include" })
+  
   const { setTitle } = useContext(TitleContext)
+  
   const [isOpen, setIsOpen] = useState(false)
+
+  // Set title
   useEffect(() => {
     if (users)
       setTitle("Users")
     document.title = "Users - CRM"
   }, [users, setTitle])
 
+  // Users loading & Error handling
   if (loading) return <Loading loadingText="Loading users..." />
   if (error) return <ShowError error={error} />
 
   //setting up flags to indicate user permissions to edit & delete company data
-  //use below in component return method to conditionally render Add New buttons as well as editing form (including <Drawer/>)
+  //use below in component return method to conditionally render Add New button as well as Adding form (including <Drawer/>)
   const canAdd = user && user.permissions.includes("user:write")
 
   return (
@@ -59,7 +65,7 @@ function Users() {
               </tr>
             )) : (
               <tr>
-                <td colSpan="3">No users found.</td>
+                <td colSpan="4">No users found.</td>
               </tr>
             )}
           </tbody>
@@ -71,7 +77,7 @@ function Users() {
         // represented by <<canAdd>> flag
         canAdd && (
           <Drawer onClose={() => setIsOpen(false)} isOpen={isOpen}>
-            <UserAdd />
+            <UserAdd/>
           </Drawer>
         )
       }

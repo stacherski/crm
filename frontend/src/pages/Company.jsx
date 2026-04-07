@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
+import { useApi } from "../hooks/useApi"
 import { Loading } from "../components/Loading"
 import { ShowError } from "../components/ShowError"
 import Drawer from "../components/Drawer"
@@ -20,6 +21,16 @@ function Company() {
   //setting up flags to indicate user permissions to edit & delete company data
   //use below in component return method to conditionally render Add New buttons as well as editing form (including <Drawer/>)
   const canAdd = user && user.permissions.includes("user:write")
+  const canDelete = user && user.permissions.includes("user:delete")
+
+  const { del, loading: loadingDelete, error: errorDelete } = useApi()
+
+  async function deleteCompany(c) {
+    if (window.confirm(`Are you sure to delete ${c.name}?`)){
+      const deleted = await del(`/api/company/delete/${c._id}`)
+      location.href = '/companies'
+    }
+  }
 
   useEffect(() => {
     setTitle("Companies")
@@ -41,13 +52,17 @@ function Company() {
           )
         }
       </div>
-      <as-table-sort sort filter>
+      <as-table-sort sort filter omit="6">
         <table className="table equal">
           <thead>
             <tr>
               <th>Name</th>
               <th>Address</th>
               <th>Phone</th>
+              <th>E-mail</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -56,6 +71,10 @@ function Company() {
                 <td><Link to={`/companies/${c._id}`}>{c.name}</Link></td>
                 <td>{c.address}</td>
                 <td>{c.phone}</td>
+                <td><Link to={`mailto:${c.email}`}>{c.email}</Link></td>
+                <td>{c.status}</td>
+                <td>{c.companyType}</td>
+                <td><a onClick={()=>deleteCompany(c)} className="btn btn-error btn-transparent" size="m">Delete <as-icon size="m" name="trashcan"></as-icon></a></td>
               </tr>
             )) : (
               <tr>

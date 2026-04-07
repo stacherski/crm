@@ -17,8 +17,8 @@ const router = express.Router();
 router.post("/", (req, res) => {
   res.clearCookie("crmAuthToken");
   res.clearCookie("crmRefreshToken");
-  res.sendStatus(204)
-  // res.status(200).json({ message: "Logged out successfully!" });
+  res.sendStatus(200);
+  // res.status(204).json({ message: "Logged out successfully!" });
 });
 
 module.exports = router;

@@ -36,22 +36,16 @@ router.post("/", async (req, res) => {
     role: user.role,
     permissions: user.permissions,
     name: user.name + " " + user.surname,
-  }
+  };
 
   // Generate JWT token
-  const accessToken = jwt.sign(
-    payload,
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: "15m",
-    },
-  );
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
 
-  const refreshToken = jwt.sign(
-    payload,
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  )
+  const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
 
   res.cookie("crmAuthToken", accessToken, {
     httpOnly: true,
@@ -64,8 +58,8 @@ router.post("/", async (req, res) => {
     httpOnly: true,
     sameSite: "lax",
     secure: false,
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  })
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   res.status(200).json({ message: `Logged in successfully!` });
 });

@@ -22,7 +22,7 @@ function Logout() {
     async function handleLogout() {
       const res = await fetch("/auth/logout", {
         method: "POST",
-        credentials: "include",
+        // credentials: "include",
         headers: {
           "Content-Type": "application/json"
         }

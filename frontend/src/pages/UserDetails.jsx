@@ -46,15 +46,20 @@ function UserDetails() {
 
   return (
     <>
+      <div>
+        <a href="/users" className="btn">
+          <as-icon name="--as-icon-arrow-left" rotate="180deg" size="m"></as-icon>
+          Back to Users
+        </a>
+      </div>
       {!isEmpty(b) ? (
-        <p>Name: {b.name} {b.surname}</p>
-      ) : (
-        <p>User not found.</p>
-      )}
-
-      {companies.length > 0 ? (
         <>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="page-header">
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+              <h1>{b.name} {b.surname}</h1>
+              <div style={{ display: 'grid', gap: 'var(--as-space-m)', alignItems: 'start' }}>
+                <div className="edit-bar">
+                            
             {
               canPatch && (
                 <a className="btn" onClick={() => setIsOpen(!isOpen)}>
@@ -63,7 +68,39 @@ function UserDetails() {
                 </a>
               )
             }
+  
+                </div>
+              </div>
+            </div>
           </div>
+          <div className="page-content">
+            <as-panel>
+              <div className="panel">
+                <div className="panel-body columns">
+                  <div className="data-list one-line">
+                    <div><label>Full name</label><div> {b.name} {b.surname}</div></div>
+                    <div><label>Phone</label><div> {b.phone}</div></div>
+                    <div><label>Email</label><div> {b.email}</div></div>
+                    <div><label>Status</label><div> {b.status}</div></div>
+                  </div>
+                  <div className="data-list one-line">
+                    <div><label>Role</label><div> {b.role}</div></div>
+                    <div><label>Company level permissions</label><div className="flex-start">{b.permissions.filter(p=>p.includes('company')).map(p => <span className="pill" data-type={p} key={p}>{p}</span>)}</div></div>
+                    <div><label>User level permissions</label><div className="flex-start">{b.permissions.filter(p=>p.includes('user')).map(p => <span className="pill" data-type={p} key={p}>{p}</span>)}</div></div>
+                    <div><label>Pipeline level permissions</label><div className="flex-start">{b.permissions.filter(p=>p.includes('pipeline')).map(p => <span className="pill" data-type={p} key={p}>{p}</span>)}</div></div>
+                  </div>
+                </div>
+              </div>
+            </as-panel>
+
+          </div>
+        </>
+      ) : (
+        <p>User not found.</p>
+      )}
+
+      {companies.length > 0 ? (
+        <>
           <h3>Companies:</h3>
           <as-table-sort sort filter>
             <table className="table equal">
@@ -96,7 +133,7 @@ function UserDetails() {
             // represented by <<canPatch>> flag & presence of the <<company>> object
             canPatch && broker[0] && (
               <Drawer onClose={() => setIsOpen(false)} isOpen={isOpen}>
-                <UserEdit broker={b} />
+                <UserEdit broker={b} onClose={() => setIsOpen(false)}/>
               </Drawer>
             )
           }

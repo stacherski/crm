@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 
-function UserAdd() {
+function UserAdd({onClose}) {
     const [form, setForm] = useState(null)
     const { post, loading: loadingAdd, error: errorAdd } = useApi()
 
@@ -44,7 +44,7 @@ function UserAdd() {
         },
         password: {
             field: "input",
-            type: "text",
+            type: "password",
             required: true,
             multiple: false,
             label: "Password"

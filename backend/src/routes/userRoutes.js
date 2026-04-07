@@ -5,7 +5,7 @@ const User = require("../models/User");
 const Company = require("../models/Company");
 const getUserByID = require("../middleware/getUserById");
 const hashPassword = require("../middleware/hashPassword");
-const userPermissions = require("../middleware/userPermissions")
+const userPermissions = require("../middleware/userPermissions");
 
 const permissions = {
   all: ["user:read"],
@@ -15,7 +15,7 @@ const permissions = {
   add: ["user:write"],
   patch: ["user:write"],
   delete: ["user:delete"],
-}
+};
 /**
  * @openapi
  * /api/user/all:
@@ -163,13 +163,18 @@ router.get("/query", userPermissions(permissions.query), async (req, res) => {
  *                 $ref: '#/components/schemas/User'
  */
 
-router.get("/:id", userPermissions(permissions.byid), getUserByID, async (req, res) => {
-  if (req.params.id == null) {
-    res.status(400).json({ message: "User ID is required" });
-  }
-  const users = await User.find({ _id: req.params.id });
-  res.status(200).json(users);
-});
+router.get(
+  "/:id",
+  userPermissions(permissions.byid),
+  getUserByID,
+  async (req, res) => {
+    if (req.params.id == null) {
+      res.status(400).json({ message: "User ID is required" });
+    }
+    const users = await User.find({ _id: req.params.id });
+    res.status(200).json(users);
+  },
+);
 
 /** @openapi
  * /api/user/{id}/company:
@@ -201,13 +206,17 @@ router.get("/:id", userPermissions(permissions.byid), getUserByID, async (req, r
  *                 $ref: '#/components/schemas/Company'
  */
 
-router.get("/:id/company", userPermissions(permissions.company), async (req, res) => {
-  if (req.params.id == null) {
-    res.status(400).json({ message: "User ID is required" });
-  }
-  const company = await Company.find({ brokerId: req.params.id });
-  res.status(200).json(company);
-});
+router.get(
+  "/:id/company",
+  userPermissions(permissions.company),
+  async (req, res) => {
+    if (req.params.id == null) {
+      res.status(400).json({ message: "User ID is required" });
+    }
+    const company = await Company.find({ brokerId: req.params.id });
+    res.status(200).json(company);
+  },
+);
 
 /** @openapi
  * /api/user/add:
@@ -310,42 +319,48 @@ router.post("/add", userPermissions(permissions.add), async (req, res) => {
  *               example: {message: "Bad request"}
  */
 
-router.patch("/patch/:id", userPermissions(permissions.patch), hashPassword, getUserByID, async (req, res) => {
-  if (req.body.name != null) {
-    res.user.name = req.body.name;
-  }
-  if (req.body.surname != null) {
-    res.user.description = req.body.surname;
-  }
-  if (req.body.email != null) {
-    res.user.email = req.body.email;
-  }
-  if (req.body.role != null) {
-    res.user.role = req.body.role;
-  }
-  if (req.body.roleId != null) {
-    res.user.roleId = req.body.roleId;
-  }
-  if (req.body.role != null) {
-    res.user.role = req.body.role;
-  }
-  if (req.body.permissions != null) {
-    res.user.permissions = req.body.permissions;
-  }
-  if (req.body.status != null) {
-    res.user.status = req.body.status;
-  }
-  if (req.body.passwordHash != null) {
-    res.user.passwordHash = req.body.passwordHash;
-  }
+router.patch(
+  "/patch/:id",
+  userPermissions(permissions.patch),
+  hashPassword,
+  getUserByID,
+  async (req, res) => {
+    if (req.body.name != null) {
+      res.user.name = req.body.name;
+    }
+    if (req.body.surname != null) {
+      res.user.description = req.body.surname;
+    }
+    if (req.body.email != null) {
+      res.user.email = req.body.email;
+    }
+    if (req.body.role != null) {
+      res.user.role = req.body.role;
+    }
+    if (req.body.roleId != null) {
+      res.user.roleId = req.body.roleId;
+    }
+    if (req.body.role != null) {
+      res.user.role = req.body.role;
+    }
+    if (req.body.permissions != null) {
+      res.user.permissions = req.body.permissions;
+    }
+    if (req.body.status != null) {
+      res.user.status = req.body.status;
+    }
+    if (req.body.password != null) {
+      res.user.passwordHash = await bcrypt.hash(req.body.password, 10);
+    }
 
-  try {
-    const updatedUser = await res.user.save();
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+    try {
+      const updatedUser = await res.user.save();
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  },
+);
 
 /** @openapi
  * /api/user/delete/{id}:
@@ -389,13 +404,18 @@ router.patch("/patch/:id", userPermissions(permissions.patch), hashPassword, get
  *               example: "500 Server error"
  */
 
-router.delete("delete/:id", userPermissions(permissions.delete), getUserByID, async (req, res) => {
-  try {
-    await res.user.deleteOne();
-    res.json({ message: `User ID: ${req.params.id} deleted` });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete(
+  "delete/:id",
+  userPermissions(permissions.delete),
+  getUserByID,
+  async (req, res) => {
+    try {
+      await res.user.deleteOne();
+      res.json({ message: `User ID: ${req.params.id} deleted` });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+);
 
 module.exports = router;

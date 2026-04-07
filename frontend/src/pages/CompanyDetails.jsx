@@ -54,8 +54,10 @@ function CompanyDetails() {
   const canDelete = user && user.permissions.includes("user:delete")
 
   async function deleteCompany(c) {
-    const deleted = await del(`/api/company/delete/${c._id}`)
-    location.href = '/companies'
+    if (window.confirm(`Are you sure to delete ${c.name}?`)){
+      const deleted = await del(`/api/company/delete/${c._id}`)
+      location.href = '/companies'
+    }
   }
 
   return (

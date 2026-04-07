@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 
-function UserEdit({ broker }) {
+function UserEdit({ broker, onClose }) {
     const [form, setForm] = useState(broker)
     const { patch, loading: loadingEdit, error: errorEdit } = useApi()
 
@@ -40,8 +40,8 @@ function UserEdit({ broker }) {
         },
         password: {
             field: "input",
-            type: "text",
-            required: true,
+            type: "password",
+            required: false,
             multiple: false,
             label: "Password"
         },
@@ -134,7 +134,10 @@ function UserEdit({ broker }) {
 
     return (
         <>
-            <h2>Edit user</h2>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <h2>Edit user</h2>
+                <a onClick={onClose} className="btn btn-transparent" size="m"><as-icon size="m" name="plus" rotate="45deg"></as-icon></a>
+            </div>
             <div className="form">
                 <form method="POST" onSubmit={handleSubmit}>
                     {Object.entries(fields).map(([key, config], index) => {
