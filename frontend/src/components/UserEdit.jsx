@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
+import { useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
+import { useAuth } from "../components/AuthProvider"
 
 function UserEdit({ broker, onClose }) {
+    const { user } = useAuth()
     const [form, setForm] = useState(broker)
     const { patch, loading: loadingEdit, error: errorEdit } = useApi()
+    const navigate = useNavigate()
 
     useEffect(() => {
         setForm(broker)
@@ -16,60 +20,69 @@ function UserEdit({ broker, onClose }) {
         error: rolesError
     } = useFetch(`/api/role`, { credentials: "include" })
 
-    const fields = {
-        name: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "Name"
-        },
-        surname: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "Surname"
-        },
-        email: {
-            field: "input",
-            type: "email",
-            required: true,
-            multiple: false,
-            label: "E-mail"
-        },
-        password: {
-            field: "input",
-            type: "password",
-            required: false,
-            multiple: false,
-            label: "Password"
-        },
-        roleId: {
-            field: "select",
-            type: "",
-            required: true,
-            multiple: false,
-            label: "User role",
-            options: []
-        },
-        status: {
-            field: "select",
-            type: "",
-            required: true,
-            multiple: false,
-            label: "User status",
-            options: [
-                { label: "Active", value: "active" },
-                { label: "Inactive", value: "inactive" }
-            ]
+    const fields = useMemo(() => {
+        return {
+            name: {
+                field: "input",
+                type: "text",
+                required: true,
+                multiple: false,
+                label: "Name"
+            },
+            surname: {
+                field: "input",
+                type: "text",
+                required: true,
+                multiple: false,
+                label: "Surname"
+            },
+            email: {
+                field: "input",
+                type: "email",
+                required: true,
+                multiple: false,
+                label: "E-mail"
+            },
+            phone: {
+                field: "input",
+                type: "text",
+                required: false,
+                multiple: false,
+                label: "Phone"
+            },
+            password: {
+                field: "input",
+                type: "password",
+                required: false,
+                multiple: false,
+                label: "Password"
+            },
+            roleId: {
+                field: "select",
+                type: "",
+                required: true,
+                multiple: false,
+                label: "User role",
+                options: (roles || [])
+                    .filter(r => user && r.importance <= user.importance)
+                    .map(r => ({
+                        value: r._id,
+                        label: `${r.name} (${r.permissions.join(', ')})`
+                    }))
+            },
+            status: {
+                field: "select",
+                type: "",
+                required: true,
+                multiple: false,
+                label: "User status",
+                options: [
+                    { label: "Active", value: "active" },
+                    { label: "Inactive", value: "inactive" }
+                ]
+            }
         }
-    }
-    if (roles)
-        fields.roleId.options = roles.map(r => ({
-            value: r._id,
-            label: `${r.name} (${r.permissions.join(', ')})`
-        }))
+    }, [roles, user])
 
     function SelectWrapper({ multiple, children }) {
         return multiple
@@ -80,7 +93,6 @@ function UserEdit({ broker, onClose }) {
     async function handleSubmit(e) {
         e.preventDefault();
         const formData = new FormData(e.target);
-        console.log("formData", formData)
         const payload = Object.fromEntries(
             Object.keys(fields).map((key) => {
                 const field = fields[key];
@@ -88,6 +100,7 @@ function UserEdit({ broker, onClose }) {
                 if (field.multiple) {
                     return [key, formData.getAll(key)]; // returns array
                 }
+
                 return [key, formData.get(key)];
             })
         );
@@ -95,7 +108,7 @@ function UserEdit({ broker, onClose }) {
         if (errorEdit)
             return <p>Please fill in all fields</p>
         if (!loadingEdit && !errorEdit)
-            location.reload()
+            navigate(`/users/${broker._id}`)
     }
 
     const handleChange = (e) => {
@@ -154,6 +167,7 @@ function UserEdit({ broker, onClose }) {
                                             required={config.required}
                                             value={value}
                                             onChange={handleChange}
+                                            autocomplete="off"
                                         />
                                     </as-form-validation>
                                 </div>

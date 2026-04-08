@@ -23,7 +23,8 @@
     border-color: currentColor;
     background-color: var(--background);
     padding-inline: var(--as-space-l) var(--as-space-s);
-    padding-block: var(--as-space-xs);
+    padding-block: var(--as-space-xxs);
+    line-height: var(--as-line-height-none);
     position: relative;
     transition: background-color var(--as-time-xs) ease-out;
 

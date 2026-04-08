@@ -27,6 +27,8 @@ const baseOptions = { timestamps: true };
  *             - user:read
  *             - user:write
  *             - user:delete
+ *         importance:
+ *           type: number
  *       example:
  *         _id: "64b8c9f1e1b2c3d4e5f67890"
  *         name: "admin"
@@ -34,22 +36,28 @@ const baseOptions = { timestamps: true };
  */
 
 const RoleSchema = new Schema(
-    {
-        name: { type: String, required: true, unique: true },
-        permissions: [{
-            type: String, enum: [
-                "company:read",
-                "company:write",
-                "company:delete",
-                "pipeline:read",
-                "pipeline:write",
-                "pipeline:delete",
-                "user:read",
-                "user:write",
-                "user:delete"], required: true
-        }],
-    },
-    baseOptions,
+  {
+    name: { type: String, required: true, unique: true },
+    permissions: [
+      {
+        type: String,
+        enum: [
+          "company:read",
+          "company:write",
+          "company:delete",
+          "pipeline:read",
+          "pipeline:write",
+          "pipeline:delete",
+          "user:read",
+          "user:write",
+          "user:delete",
+        ],
+        required: true,
+      },
+    ],
+    importance: { type: Number, required: true },
+  },
+  baseOptions,
 );
 
 const Role = mongoose.model("Role", RoleSchema);

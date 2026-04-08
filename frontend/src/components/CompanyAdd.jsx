@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 
 function CompanyAdd() {
     const [form, setForm] = useState(null)
     const { post, loading: loadingAdd, error: errorAdd } = useApi()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         setForm()
@@ -13,6 +16,11 @@ function CompanyAdd() {
     useEffect(() => {
         // console.log('Form state:', form)
     }, [form])
+
+    useEffect(() => {
+        if (errorAdd)
+            new Toast("error", { type: 'warning' })
+    }, [errorAdd])
 
     const {
         data: brokers,
@@ -143,9 +151,9 @@ function CompanyAdd() {
         );
         const added = await post(`/api/company/add`, payload)
         if (errorAdd)
-            return <p>Please fill in all fields</p>
+            new Toast("Please fill in all fields", { type: error })
         if (!loadingAdd && !errorAdd)
-            location.reload()
+            navigate('/companies')
     }
 
     return (

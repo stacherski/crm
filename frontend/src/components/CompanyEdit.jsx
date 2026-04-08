@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 import { Loading } from "./Loading"
@@ -7,6 +8,8 @@ function CompanyEdit({ company }) {
     const [form, setForm] = useState(company)
     const [fieldStatusValue, setFieldStatusValue] = useState(["a"])
     const { patch, loading: loadingEdit, error: errorEdit } = useApi()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         setForm(company)
@@ -160,9 +163,10 @@ function CompanyEdit({ company }) {
             })
         );
         const updated = await patch(`/api/company/patch/${company._id}`, payload)
-        if (!loadingEdit && !errorEdit)
-
-            location.reload()
+        if (!loadingEdit && !errorEdit) {
+            new Toast(`Changes to company "${company.name}" saved!`, { type: "success" })
+            navigate('/companies')
+        }
     }
 
     const normalizeSelectValue = (value, multiple) => {

@@ -1,18 +1,13 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
+import { useAuth } from "../components/AuthProvider"
 
-function UserAdd({onClose}) {
-    const [form, setForm] = useState(null)
+function UserAdd({ onClose }) {
+    const { user } = useAuth()
+
+    const [form, setForm] = useState({})
     const { post, loading: loadingAdd, error: errorAdd } = useApi()
-
-    useEffect(() => {
-        setForm()
-    }, [])
-
-    useEffect(() => {
-        // console.log('Form state:', form)
-    }, [form])
 
     const {
         data: roles,
@@ -20,103 +15,103 @@ function UserAdd({onClose}) {
         error: rolesError
     } = useFetch(`/api/role`, { credentials: "include" })
 
-    const fields = {
-        name: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "Name"
-        },
-        surname: {
-            field: "input",
-            type: "text",
-            required: true,
-            multiple: false,
-            label: "Surname"
-        },
-        email: {
-            field: "input",
-            type: "email",
-            required: true,
-            multiple: false,
-            label: "E-mail"
-        },
-        password: {
-            field: "input",
-            type: "password",
-            required: true,
-            multiple: false,
-            label: "Password"
-        },
-        roleId: {
-            field: "select",
-            type: "",
-            required: true,
-            multiple: false,
-            label: "User role",
-            options: []
-        },
-        status: {
-            field: "select",
-            type: "",
-            required: true,
-            multiple: false,
-            label: "User status",
-            options: [
-                { label: "Active", value: "active" },
-                { label: "Inactive", value: "inactive" }
-            ]
+    const fields = useMemo(() => {
+        return {
+            name: {
+                field: "input",
+                type: "text",
+                required: true,
+                multiple: false,
+                label: "Name"
+            },
+            surname: {
+                field: "input",
+                type: "text",
+                required: true,
+                multiple: false,
+                label: "Surname"
+            },
+            email: {
+                field: "input",
+                type: "email",
+                required: true,
+                multiple: false,
+                label: "E-mail"
+            },
+            phone: {
+                field: "input",
+                type: "text",
+                required: false,
+                multiple: false,
+                label: "Phone"
+            },
+            password: {
+                field: "input",
+                type: "password",
+                required: true,
+                multiple: false,
+                label: "Password"
+            },
+            roleId: {
+                field: "select",
+                type: "",
+                required: true,
+                multiple: false,
+                label: "User role",
+                options: (roles || [])
+                    .filter(r => user && r.importance <= user.importance)
+                    .map(r => ({
+                        value: r._id,
+                        label: `${r.name} (${r.permissions.join(', ')})`
+                    }))
+            },
+            status: {
+                field: "select",
+                type: "",
+                required: true,
+                multiple: false,
+                label: "User status",
+                options: [
+                    { label: "Active", value: "active" },
+                    { label: "Inactive", value: "inactive" }
+                ]
+            }
         }
-    }
-    if (roles)
-        fields.roleId.options = roles.map(r => ({
-            value: r._id,
-            label: `${r.name} (${r.permissions.join(', ')})`
-        }))
-
-    function SelectWrapper({ multiple, children }) {
-        return multiple
-            ? <as-select-multiple>{children}</as-select-multiple>
-            : <as-select>{children}</as-select>
-    }
+    }, [roles, user])
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        console.log("formData", formData)
+        e.preventDefault()
+
+        const formData = new FormData(e.target)
+
         const payload = Object.fromEntries(
             Object.keys(fields).map((key) => {
-                const field = fields[key];
+                const field = fields[key]
 
                 if (field.multiple) {
-                    return [key, formData.getAll(key)]; // returns array
+                    return [key, formData.getAll(key)]
                 }
-                return [key, formData.get(key)];
+                return [key, formData.get(key)]
             })
-        );
-        const added = await post(`/api/user/add`, payload)
-        if (errorAdd)
-            return <p>Please fill in all fields</p>
-        if (!loadingAdd && !errorAdd)
-            location.reload()
+        )
+
+        await post(`/api/user/add`, payload)
+
+        if (!errorAdd) location.reload()
     }
 
-    function SelectWrapper({ multiple, children }) {
-        return multiple
-            ? <as-select-multiple>{children}</as-select-multiple>
-            : <as-select>{children}</as-select>
-    }
+    if (rolesLoading) return <p>Loading...</p>
+    if (rolesError) return <p>Error loading roles</p>
 
     return (
         <>
             <h2>Add new user</h2>
             <div className="form">
-                <form method="POST" onSubmit={handleSubmit}>
-                    {Object.entries(fields).map(([key, config], index) => {
+                <form onSubmit={handleSubmit}>
+                    {Object.entries(fields).map(([key, config]) => {
                         if (config.field === 'input') {
                             return (
-                                <div key={key + index} className="data-line filtering">
+                                <div key={key} className="data-line filtering">
                                     <as-form-validation>
                                         <label>{config.label}</label>
                                         <input
@@ -137,31 +132,37 @@ function UserAdd({onClose}) {
                                         <select
                                             name={key}
                                             multiple={config.multiple}
+                                            required={config.required}
                                         >
                                             {!config.multiple && <option value="">Select...</option>}
 
-                                            {config.options.map((opt, index) => {
-                                                return (
-                                                    <option key={opt.value + index} value={opt.value}>
-                                                        {opt.label}
-                                                    </option>
-                                                )
-                                            })}
+                                            {config.options.map((opt, index) => (
+                                                <option key={opt.value + index} value={opt.value}>
+                                                    {opt.label}
+                                                </option>
+                                            ))}
                                         </select>
                                     </SelectWrapper>
                                 </div>
                             )
                         }
 
+                        return null
                     })}
 
                     <div className="data-line filtering">
                         <input type="submit" className="btn" value="Add new user" />
                     </div>
-                </form >
-            </div >
+                </form>
+            </div>
         </>
     )
+}
+
+function SelectWrapper({ multiple, children }) {
+    return multiple
+        ? <as-select-multiple>{children}</as-select-multiple>
+        : <as-select>{children}</as-select>
 }
 
 export default UserAdd

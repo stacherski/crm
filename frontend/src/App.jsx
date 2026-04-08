@@ -10,7 +10,6 @@ import Users from "./pages/Users"
 import Search from "./pages/Search"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { AuthProvider } from "./components/AuthProvider"
-import CompanyEdit from "./components/CompanyEdit"
 
 
 function App() {

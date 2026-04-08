@@ -29,6 +29,7 @@ router.get("/", authToken, async (req, res) => {
       role: user.role,
       permissions: user.permissions,
       name: user.name + " " + user.surname,
+      importance: user.importance
     }
 
     res.json(payload);

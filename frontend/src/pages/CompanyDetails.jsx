@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 import { Loading } from "../components/Loading"
@@ -25,6 +25,8 @@ function CompanyDetails() {
   const [isOpen, setIsOpen] = useState(false)
 
   const { del, loading: loadingDelete, error: errorDelete } = useApi()
+
+  const navigate = useNavigate()
 
   //Effects (must be on top)
   //Set title via TitleContext from <Template/>
@@ -54,9 +56,10 @@ function CompanyDetails() {
   const canDelete = user && user.permissions.includes("user:delete")
 
   async function deleteCompany(c) {
-    if (window.confirm(`Are you sure to delete ${c.name}?`)){
+    if (window.confirm(`Are you sure to delete ${c.name}?`)) {
       const deleted = await del(`/api/company/delete/${c._id}`)
-      location.href = '/companies'
+      new Toast(`Company ${c.name} deleted. Undo`, { type: 'info', sticky: true })
+      navigate('/companies')
     }
   }
 

@@ -340,12 +340,6 @@ router.patch(
     if (req.body.roleId != null) {
       res.user.roleId = req.body.roleId;
     }
-    if (req.body.role != null) {
-      res.user.role = req.body.role;
-    }
-    if (req.body.permissions != null) {
-      res.user.permissions = req.body.permissions;
-    }
     if (req.body.status != null) {
       res.user.status = req.body.status;
     }
@@ -405,7 +399,7 @@ router.patch(
  */
 
 router.delete(
-  "delete/:id",
+  "/delete/:id",
   userPermissions(permissions.delete),
   getUserByID,
   async (req, res) => {

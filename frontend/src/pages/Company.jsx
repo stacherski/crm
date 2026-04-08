@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { useApi } from "../hooks/useApi"
 import { Loading } from "../components/Loading"
@@ -16,6 +16,7 @@ function Company() {
   const { data, loading, error } = useFetch(companyUrl, { credentials: "include" })
   const { setTitle } = useContext(TitleContext)
 
+
   const [isOpen, setIsOpen] = useState(false)
 
   //setting up flags to indicate user permissions to edit & delete company data
@@ -25,10 +26,13 @@ function Company() {
 
   const { del, loading: loadingDelete, error: errorDelete } = useApi()
 
+  const navigate = useNavigate()
+
   async function deleteCompany(c) {
-    if (window.confirm(`Are you sure to delete ${c.name}?`)){
+    if (window.confirm(`Are you sure to delete ${c.name}?`)) {
       const deleted = await del(`/api/company/delete/${c._id}`)
-      location.href = '/companies'
+      new Toast(`Company "${c.name}" deleted. Undo`, { type: 'info', sticky: true })
+      navigate('/companies')
     }
   }
 
@@ -74,7 +78,7 @@ function Company() {
                 <td><Link to={`mailto:${c.email}`}>{c.email}</Link></td>
                 <td>{c.status}</td>
                 <td>{c.companyType}</td>
-                <td><a onClick={()=>deleteCompany(c)} className="btn btn-error btn-transparent" size="m">Delete <as-icon size="m" name="trashcan"></as-icon></a></td>
+                <td><a onClick={() => deleteCompany(c)} className="btn btn-error btn-outline" size="m">Delete <as-icon size="m" name="trashcan"></as-icon></a></td>
               </tr>
             )) : (
               <tr>

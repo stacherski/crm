@@ -91,6 +91,7 @@ const UserSchema = new Schema(
     },
     role: { type: String, required: false },
     permissions: [{ type: String, required: false }],
+    importance: { type: Number, required: false },
     status: { type: String, enum: ["active", "inactive", "locked"] },
     lastLogin: { type: Date },
   },
@@ -98,10 +99,11 @@ const UserSchema = new Schema(
 );
 
 UserSchema.pre("save", async function () {
-  if (!this.isModified("roleId")) return;
+  // if (!this.isModified("roleId")) return;
   const role = await mongoose.model("Role").findById(this.roleId);
   this.role = role.name;
   this.permissions = role.permissions;
+  this.importance = role.importance;
 });
 
 const User = mongoose.model("User", UserSchema);
